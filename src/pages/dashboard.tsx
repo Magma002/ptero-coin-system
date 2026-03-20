@@ -23,6 +23,7 @@ export default function Dashboard() {
 
   return (
     <AppLayout>
+      
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         
         {/* Total Coins Widget */}
