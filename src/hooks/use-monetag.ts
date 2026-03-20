@@ -34,7 +34,7 @@ export function useMonetag() {
       script.setAttribute('data-cfasync', 'false');
       
       script.onload = () => {
-        console.log('Monetag script loaded successfully');
+        console.log('Monetag script loaded successfully for 30-second ad');
         resolve();
       };
       
@@ -52,12 +52,13 @@ export function useMonetag() {
     try {
       await loadScript(zoneId);
       
-      // Wait a bit for the script to initialize
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait a bit longer for the script to initialize for 30-second ads
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
       // Trigger the ad
       if (window.monetag && typeof window.monetag.invoke === 'function') {
         window.monetag.invoke();
+        console.log('30-second Monetag ad triggered');
         return true;
       } else {
         console.warn('Monetag not properly initialized');

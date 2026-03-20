@@ -24,7 +24,7 @@ export default function Earn() {
       
       if (adShown) {
         setStatus('watching');
-        setTimeLeft(15); // 15 seconds for ad viewing
+        setTimeLeft(30); // 30 seconds for ad viewing
       } else {
         throw new Error('Failed to show advertisement');
       }
@@ -58,7 +58,7 @@ export default function Earn() {
           });
           
           setStatus('cooldown');
-          setTimeLeft(60); // 1 minute cooldown
+          setTimeLeft(120); // 2 minute cooldown for 30-second ads
         },
         onError: (err: any) => {
           if (err.cooldownRemaining) {
@@ -149,7 +149,7 @@ export default function Earn() {
                 </div>
                 <h2 className="text-4xl font-display font-bold mb-4">Ready to Earn?</h2>
                 <p className="text-muted-foreground mb-10 max-w-md text-lg">
-                  Watch a quick advertisement to instantly receive coins into your wallet.
+                  Watch a 30-second advertisement to instantly receive coins into your wallet.
                 </p>
                 <button 
                   onClick={handleWatchAd}
@@ -193,14 +193,14 @@ export default function Earn() {
                       strokeLinecap="round"
                       initial={{ strokeDasharray: "477 477", strokeDashoffset: 477 }}
                       animate={{ strokeDashoffset: 0 }}
-                      transition={{ duration: 15, ease: "linear" }}
+                      transition={{ duration: 30, ease: "linear" }}
                     />
                   </svg>
                   <span className="text-5xl font-display font-bold neon-text">{timeLeft}</span>
                 </div>
                 <h3 className="text-2xl font-semibold mb-2">Advertisement Playing...</h3>
-                <p className="text-muted-foreground">Please wait for the ad to complete</p>
-                {timeLeft <= 5 && (
+                <p className="text-muted-foreground">Please wait for the 30-second ad to complete</p>
+                {timeLeft <= 10 && (
                   <p className="text-yellow-400 mt-2 text-sm">Almost done! Keep waiting...</p>
                 )}
               </motion.div>
