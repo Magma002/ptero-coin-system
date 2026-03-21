@@ -147,8 +147,13 @@ export default function Earn() {
                 </div>
                 <h2 className="text-4xl font-display font-bold mb-4">Ready to Earn?</h2>
                 <p className="text-muted-foreground mb-10 max-w-md text-lg">
-                  Watch a 30-second Adsterra advertisement to earn exactly 1 coin. You must watch the full ad to receive your reward.
+                  Watch a 30-second Adsterra video advertisement to earn exactly 1 coin. You must watch the full ad to receive your reward.
                 </p>
+                <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg max-w-md">
+                  <p className="text-yellow-400 text-sm">
+                    ⚠️ Currently showing simulated ads. Update Adsterra script for real video ads.
+                  </p>
+                </div>
                 <button onClick={handleWatchAd} className="px-12 py-5 rounded-full bg-white text-black font-bold text-xl hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:shadow-[0_0_50px_rgba(255,255,255,0.5)]">
                   Watch 30s Adsterra Ad & Earn 1 Coin
                 </button>
