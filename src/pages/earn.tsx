@@ -17,20 +17,26 @@ export default function Earn() {
   const { toast } = useToast();
 
   const handleWatchAd = async () => {
+    console.log('🎬 User clicked "Watch Ad" button');
     setStatus('loading');
     try {
+      console.log('🔄 Attempting to show ExoClick ad...');
       const adShown = await showAd();
+      console.log('📊 Ad show result:', adShown);
+      
       if (adShown) {
+        console.log('✅ Ad shown successfully, starting 30s timer');
         setStatus('watching');
         setTimeLeft(30);
       } else {
+        console.error('❌ Failed to show advertisement');
         throw new Error('Failed to show advertisement');
       }
     } catch (error) {
-      console.error('Error loading ad:', error);
+      console.error('💥 Error in handleWatchAd:', error);
       toast({
         title: "Ad Loading Failed",
-        description: "Please try again in a moment.",
+        description: "Please check the browser console for details and try again.",
         variant: "destructive",
       });
       setStatus('idle');

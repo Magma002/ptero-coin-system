@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExoClick Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .ad-container {
+            background: #333;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            min-height: 200px;
+            border: 2px solid #e74c3c;
+        }
+        button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        button:hover {
+            background: #c0392b;
+        }
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎬 ExoClick Integration Test</h1>
+        <p>This page tests the ExoClick ad integration directly</p>
+        
+        <div class="ad-container" id="ad-container">
+            <p>Click "Load Ad" to test ExoClick integration</p>
+        </div>
+        
+        <button onclick="loadExoClickAd()">Load ExoClick Ad</button>
+        <button onclick="clearLog()">Clear Log</button>
+        
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        const EXOCLICK_SCRIPT_URL = 'https://a.magsrv.com/ad-provider.js';
+        const EXOCLICK_ZONE_ID = '5877266';
+        const EXOCLICK_CLASS = 'eas6a97888e37';
+        
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.innerHTML += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+        
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+        
+        async function loadExoClickScript() {
+            return new Promise((resolve, reject) => {
+                log('📥 Loading ExoClick script...');
+                
+                // Initialize AdProvider
+                if (!window.AdProvider) {
+                    window.AdProvider = [];
+                    log('🔧 Initialized AdProvider array');
+                }
+                
+                const script = document.createElement('script');
+                script.src = EXOCLICK_SCRIPT_URL;
+                script.async = true;
+                script.type = 'application/javascript';
+                script.setAttribute('data-cfasync', 'false');
+                
+                script.onload = () => {
+                    log('✅ ExoClick script loaded successfully');
+                    log(`🔍 AdProvider available: ${!!window.AdProvider}`);
+                    log(`🔍 AdProvider length: ${window.AdProvider?.length || 0}`);
+                    resolve();
+                };
+                
+                script.onerror = (error) => {
+                    log('❌ Failed to load ExoClick script');
+                    log(`📍 Script URL: ${EXOCLICK_SCRIPT_URL}`);
+                    reject(error);
+                };
+                
+                document.head.appendChild(script);
+                log('📤 Script element added to head');
+            });
+        }
+        
+        async function loadExoClickAd() {
+            try {
+                log('🎬 Starting ExoClick ad test...');
+                
+                // Load script first
+                await loadExoClickScript();
+                
+                // Clear the container
+                const container = document.getElementById('ad-container');
+                container.innerHTML = '<p style="color: #e74c3c;">Loading ExoClick Ad...</p>';
+                
+                // Create the ExoClick ad element
+                const adElement = document.createElement('ins');
+                adElement.className = EXOCLICK_CLASS;
+                adElement.setAttribute('data-zoneid', EXOCLICK_ZONE_ID);
+                adElement.style.cssText = `
+                    display: block;
+                    width: 728px;
+                    height: 90px;
+                    margin: 20px auto;
+                `;
+                
+                log(`🎯 Created ad element with zone ID: ${EXOCLICK_ZONE_ID}`);
+                log(`🎯 Ad element class: ${EXOCLICK_CLASS}`);
+                
+                // Add the ad element to container
+                container.appendChild(adElement);
+                
+                // Trigger the ad
+                if (window.AdProvider) {
+                    log('🚀 Triggering ExoClick ad...');
+                    window.AdProvider.push({"serve": {}});
+                    log('✅ AdProvider.push() called successfully');
+                } else {
+                    log('❌ AdProvider not available');
+                }
+                
+                // Check if ad loaded after a delay
+                setTimeout(() => {
+                    const adContent = adElement.innerHTML;
+                    if (adContent && adContent.trim() !== '') {
+                        log('✅ Ad content detected in element');
+                        log(`📄 Ad content preview: ${adContent.substring(0, 100)}...`);
+                    } else {
+                        log('⚠️ No ad content detected in element');
+                        log('🔍 This might indicate an issue with the zone configuration');
+                    }
+                }, 3000);
+                
+            } catch (error) {
+                log(`💥 Error loading ExoClick ad: ${error.message}`);
+            }
+        }
+        
+        // Auto-load on page load for testing
+        window.addEventListener('load', () => {
+            log('🌐 Page loaded, ready for testing');
+            log(`🎯 Zone ID: ${EXOCLICK_ZONE_ID}`);
+            log(`🎯 Ad Class: ${EXOCLICK_CLASS}`);
+            log(`📍 Script URL: ${EXOCLICK_SCRIPT_URL}`);
+        });
+    </script>
+</body>
+</html>
