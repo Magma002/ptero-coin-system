@@ -3,23 +3,20 @@ import { useCallback, useRef } from 'react';
 /*
  * EXOCLICK INTEGRATION FOR 30-SECOND REWARDED VIDEO ADS
  * 
- * ExoClick has excellent support for rewarded video ads and various ad formats.
- * 
- * Setup Steps:
- * 1. Go to https://www.exoclick.com/
- * 2. Create publisher account (verification in progress)
- * 3. Create a "Rewarded Video" or "Video Ad" zone
- * 4. Get your Zone ID and script URL
- * 5. Update the configuration below
+ * Using the real ExoClick ad code provided:
+ * - Script: https://a.magsrv.com/ad-provider.js
+ * - Zone ID: 5877266
+ * - Class: eas6a97888e37
  */
 
-// REPLACE THESE WITH YOUR EXOCLICK CREDENTIALS
-const EXOCLICK_ZONE_ID = 'your-zone-id-here'; // Get from ExoClick dashboard
-const EXOCLICK_SCRIPT_URL = 'https://a.exoclick.com/tag_gen.js'; // Default ExoClick script
+// ExoClick configuration from your dashboard
+const EXOCLICK_SCRIPT_URL = 'https://a.magsrv.com/ad-provider.js';
+const EXOCLICK_ZONE_ID = '5877266';
+const EXOCLICK_CLASS = 'eas6a97888e37';
 
 declare global {
   interface Window {
-    ExoLoader?: any;
+    AdProvider?: any[];
     [key: string]: any;
   }
 }
@@ -40,25 +37,25 @@ export function useExoClick() {
         scriptRef.current = null;
       }
 
-      // Check if ExoClick is already loaded
-      if (window.ExoLoader) {
-        resolve();
-        return;
+      // Initialize AdProvider array if not exists
+      if (!window.AdProvider) {
+        window.AdProvider = [];
       }
 
       const script = document.createElement('script');
       script.src = EXOCLICK_SCRIPT_URL;
       script.async = true;
+      script.type = 'application/javascript';
       script.setAttribute('data-cfasync', 'false');
       
       script.onload = () => {
-        console.log('ExoClick script loaded successfully');
+        console.log('ExoClick AdProvider script loaded successfully');
         setTimeout(() => resolve(), 500);
       };
       
       script.onerror = () => {
-        console.error('Failed to load ExoClick script');
-        reject(new Error('Failed to load ExoClick script'));
+        console.error('Failed to load ExoClick AdProvider script');
+        reject(new Error('Failed to load ExoClick AdProvider script'));
       };
 
       document.head.appendChild(script);
@@ -87,36 +84,40 @@ export function useExoClick() {
         flex-direction: column;
       `;
 
-      // Show setup instructions for ExoClick
+      // Create the ExoClick ad element
+      const adElement = document.createElement('ins');
+      adElement.className = EXOCLICK_CLASS;
+      adElement.setAttribute('data-zoneid', EXOCLICK_ZONE_ID);
+      adElement.style.cssText = `
+        display: block;
+        width: 100%;
+        height: 100%;
+        max-width: 800px;
+        max-height: 600px;
+      `;
+
+      // Add wrapper content with close button
       adContainer.innerHTML = `
-        <div style="color: white; text-align: center; font-family: Arial, sans-serif; max-width: 600px; padding: 20px;">
-          <div style="font-size: 24px; margin-bottom: 20px; color: #e74c3c;">🎯 ExoClick Setup in Progress</div>
-          <div style="font-size: 18px; margin-bottom: 15px;">Verification Meta Tag Added Successfully!</div>
-          <div style="font-size: 16px; opacity: 0.8; margin-bottom: 30px;">ExoClick supports excellent rewarded video ads</div>
+        <div style="color: white; text-align: center; font-family: Arial, sans-serif; max-width: 800px; padding: 20px; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
           
-          <!-- Simulated video player -->
-          <div style="width: 100%; max-width: 480px; height: 270px; background: linear-gradient(45deg, #1a1a1a, #333); border-radius: 8px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; border: 2px solid #e74c3c;">
-            <div style="color: #e74c3c; font-size: 48px;">▶</div>
+          <!-- Close button (hidden initially, shown after 30 seconds) -->
+          <button id="close-ad-btn" style="position: absolute; top: 20px; right: 20px; background: rgba(231, 76, 60, 0.8); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; cursor: pointer; display: none; z-index: 10001;" onclick="document.getElementById('exoclick-ads-container').remove();">×</button>
+          
+          <div style="font-size: 24px; margin-bottom: 20px; color: #e74c3c;">🎬 ExoClick Video Ad</div>
+          <div style="font-size: 18px; margin-bottom: 15px;">Watch the full ad to earn 1 coin</div>
+          
+          <!-- ExoClick ad will be inserted here -->
+          <div id="exoclick-ad-slot" style="width: 100%; height: 400px; background: #1a1a1a; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 2px solid #e74c3c;">
+            <div style="color: #e74c3c; font-size: 16px;">Loading ExoClick Ad...</div>
           </div>
           
-          <div style="font-size: 14px; opacity: 0.6; margin-bottom: 10px;">This will show real 30-second video ads</div>
-          <div style="font-size: 14px; opacity: 0.6; margin-bottom: 20px;">after ExoClick account approval</div>
-          
-          <div style="background: rgba(231, 76, 60, 0.1); border: 1px solid #e74c3c; border-radius: 8px; padding: 15px; margin-top: 20px;">
-            <div style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">✅ Verification Added</div>
-            <div style="font-size: 14px; text-align: left; line-height: 1.5;">
-              ✅ Meta tag added to HTML head<br>
-              ⏳ Wait for ExoClick account approval<br>
-              📝 Create "Rewarded Video" ad zone<br>
-              🔧 Get Zone ID and update code<br>
-              🎬 Start showing real video ads
-            </div>
+          <div style="margin-top: 20px; font-size: 14px; opacity: 0.8;">
+            Stay on this page for the full duration to earn your reward
           </div>
           
-          <div style="margin-top: 20px; padding: 10px; background: rgba(46, 204, 113, 0.1); border: 1px solid #2ecc71; border-radius: 8px;">
-            <div style="color: #2ecc71; font-size: 14px;">
-              🚀 ExoClick offers high-quality video ads with good revenue rates
-            </div>
+          <!-- Timer display -->
+          <div id="ad-timer" style="margin-top: 15px; font-size: 18px; color: #e74c3c; font-weight: bold;">
+            Time remaining: <span id="timer-seconds">30</span>s
           </div>
         </div>
       `;
@@ -124,7 +125,49 @@ export function useExoClick() {
       document.body.appendChild(adContainer);
       adContainerRef.current = adContainer;
 
-      console.log('ExoClick container created - verification meta tag added, ready for account approval');
+      // Insert the ExoClick ad element
+      const adSlot = adContainer.querySelector('#exoclick-ad-slot');
+      if (adSlot) {
+        adSlot.innerHTML = '';
+        adSlot.appendChild(adElement);
+      }
+
+      // Trigger the ExoClick ad
+      if (window.AdProvider) {
+        try {
+          window.AdProvider.push({"serve": {}});
+          console.log('ExoClick ad triggered successfully');
+        } catch (adError) {
+          console.warn('Error triggering ExoClick ad:', adError);
+        }
+      }
+
+      // Start 30-second timer
+      let timeLeft = 30;
+      const timerElement = adContainer.querySelector('#timer-seconds');
+      const closeButton = adContainer.querySelector('#close-ad-btn');
+      
+      const timer = setInterval(() => {
+        timeLeft--;
+        if (timerElement) {
+          timerElement.textContent = timeLeft.toString();
+        }
+        
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          // Show close button after 30 seconds
+          if (closeButton) {
+            closeButton.style.display = 'block';
+          }
+          // Update timer text
+          if (timerElement && timerElement.parentElement) {
+            timerElement.parentElement.innerHTML = '✅ Ad completed! You can close now.';
+            timerElement.parentElement.style.color = '#2ecc71';
+          }
+        }
+      }, 1000);
+
+      console.log('ExoClick video ad container created with real ad code');
       
       return true;
 
