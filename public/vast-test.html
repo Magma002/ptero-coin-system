@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExoClick VAST Zone 5877274 Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background: #1a1a1a; 
+            color: white; 
+            text-align: center;
+        }
+        .status { 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 5px; 
+            font-weight: bold;
+        }
+        .success { background: #2ecc71; color: white; }
+        .error { background: #e74c3c; color: white; }
+        .warning { background: #f39c12; color: white; }
+        .video-container {
+            background: #333;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 8px;
+            max-width: 800px;
+            min-height: 400px;
+            border: 2px solid #e74c3c;
+        }
+        video {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border-radius: 8px;
+            background: #000;
+        }
+        button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎬 ExoClick VAST Zone 5877274 Test</h1>
+    <div id="status">Click button to test VAST video ad</div>
+    
+    <button onclick="testVASTAd()">Test VAST Video Ad</button>
+    <button onclick="fetchVASTXML()">Fetch VAST XML Only</button>
+    <button onclick="clearLog()">Clear Log</button>
+    
+    <div class="video-container" id="video-container">
+        <p>Click "Test VAST Video Ad" to load and play the video advertisement</p>
+    </div>
+    
+    <div class="log" id="log"></div>
+
+    <script>
+        const ZONE_ID = '5877274';
+        const VAST_URL = `https://s.magsrv.com/v1/vast.php?idzone=${ZONE_ID}`;
+        
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.innerHTML += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+        
+        function updateStatus(message, type = 'warning') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = message;
+            statusDiv.className = 'status ' + type;
+            log(message);
+        }
+        
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+        
+        async function fetchVASTXML() {
+            clearLog();
+            updateStatus('Fetching VAST XML...', 'warning');
+            
+            try {
+                log('📥 Fetching VAST XML from: ' + VAST_URL);
+                const response = await fetch(VAST_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const vastXML = await response.text();
+                log('✅ VAST XML received (' + vastXML.length + ' characters)');
+                log('📄 VAST XML preview: ' + vastXML.substring(0, 500) + '...');
+                
+                // Parse XML to check structure
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(vastXML, 'text/xml');
+                
+                const ads = xmlDoc.getElementsByTagName('Ad');
+                const mediaFiles = xmlDoc.getElementsByTagName('MediaFile');
+                
+                log('🔍 Found ' + ads.length + ' Ad elements');
+                log('🔍 Found ' + mediaFiles.length + ' MediaFile elements');
+                
+                if (mediaFiles.length > 0) {
+                    for (let i = 0; i < mediaFiles.length; i++) {
+                        const mediaFile = mediaFiles[i];
+                        const type = mediaFile.getAttribute('type');
+                        const url = mediaFile.textContent?.trim();
+                        log(`📹 MediaFile ${i + 1}: ${type} - ${url}`);
+                    }
+                    updateStatus('✅ VAST XML contains video files!', 'success');
+                } else {
+                    updateStatus('⚠️ No MediaFile elements found in VAST', 'warning');
+                }
+                
+            } catch (error) {
+                log('❌ Error fetching VAST XML: ' + error.message);
+                updateStatus('❌ Failed to fetch VAST XML', 'error');
+            }
+        }
+        
+        async function testVASTAd() {
+            clearLog();
+            updateStatus('Testing VAST video ad...', 'warning');
+            
+            try {
+                // Fetch VAST XML
+                log('📥 Fetching VAST XML...');
+                const response = await fetch(VAST_URL);
+                const vastXML = await response.text();
+                log('✅ VAST XML received');
+                
+                // Parse VAST XML
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(vastXML, 'text/xml');
+                const mediaFiles = xmlDoc.getElementsByTagName('MediaFile');
+                
+                if (mediaFiles.length === 0) {
+                    throw new Error('No MediaFile elements found in VAST XML');
+                }
+                
+                // Find best video URL
+                let videoUrl = '';
+                for (let i = 0; i < mediaFiles.length; i++) {
+                    const mediaFile = mediaFiles[i];
+                    const type = mediaFile.getAttribute('type');
+                    if (type && type.includes('mp4')) {
+                        videoUrl = mediaFile.textContent?.trim() || '';
+                        break;
+                    }
+                }
+                
+                if (!videoUrl && mediaFiles[0]) {
+                    videoUrl = mediaFiles[0].textContent?.trim() || '';
+                }
+                
+                if (!videoUrl) {
+                    throw new Error('No video URL found in MediaFile elements');
+                }
+                
+                log('🎥 Video URL: ' + videoUrl);
+                
+                // Create video element
+                const videoContainer = document.getElementById('video-container');
+                videoContainer.innerHTML = `
+                    <video id="vast-video" controls autoplay style="width: 100%; max-width: 600px; height: auto;">
+                        <source src="${videoUrl}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div style="margin-top: 10px; font-size: 14px;">
+                        Video loaded from ExoClick VAST zone ${ZONE_ID}
+                    </div>
+                `;
+                
+                const video = document.getElementById('vast-video');
+                
+                video.onloadstart = () => log('📺 Video loading started');
+                video.oncanplay = () => log('✅ Video ready to play');
+                video.onplay = () => {
+                    log('▶️ Video started playing');
+                    updateStatus('✅ VAST video ad playing successfully!', 'success');
+                };
+                video.onended = () => {
+                    log('🏁 Video playback completed');
+                    updateStatus('✅ Video ad completed!', 'success');
+                };
+                video.onerror = (e) => {
+                    log('❌ Video playback error: ' + e.message);
+                    updateStatus('❌ Video playback failed', 'error');
+                };
+                
+            } catch (error) {
+                log('💥 Error testing VAST ad: ' + error.message);
+                updateStatus('❌ VAST ad test failed', 'error');
+                
+                // Show fallback message
+                const videoContainer = document.getElementById('video-container');
+                videoContainer.innerHTML = `
+                    <div style="color: #e74c3c; padding: 20px;">
+                        <h3>VAST Ad Test Failed</h3>
+                        <p>Error: ${error.message}</p>
+                        <p>This could mean:</p>
+                        <ul style="text-align: left; display: inline-block;">
+                            <li>Zone 5877274 is not active yet</li>
+                            <li>No video ads available for your location</li>
+                            <li>Zone needs approval from ExoClick</li>
+                            <li>VAST XML format issue</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+        
+        // Auto-test on page load
+        window.addEventListener('load', () => {
+            log('🌐 Page loaded');
+            log('🎯 Zone ID: ' + ZONE_ID);
+            log('📍 VAST URL: ' + VAST_URL);
+            log('Ready for testing!');
+        });
+    </script>
+</body>
+</html>
