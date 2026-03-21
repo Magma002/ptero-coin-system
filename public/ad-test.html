@@ -1,87 +1,429 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Earn Coins</title>
-<link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
-<script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Delegate-CH" content="Sec-CH-UA https://s.magsrv.com; Sec-CH-UA-Mobile https://s.magsrv.com; Sec-CH-UA-Arch https://s.magsrv.com; Sec-CH-UA-Model https://s.magsrv.com; Sec-CH-UA-Platform https://s.magsrv.com; Sec-CH-UA-Platform-Version https://s.magsrv.com; Sec-CH-UA-Bitness https://s.magsrv.com; Sec-CH-UA-Full-Version-List https://s.magsrv.com; Sec-CH-UA-Full-Version https://s.magsrv.com;">
+<title>CoinDrop — Earn</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0f;--surface:#13131a;--card:#1c1c28;--border:#2a2a3d;
+    --gold:#f5c842;--accent:#7c6af7;--text:#e8e8f0;--muted:#6b6b8a;--success:#3ddc97;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;
+    background-image:linear-gradient(rgba(124,106,247,.03)1px,transparent 1px),linear-gradient(90deg,rgba(124,106,247,.03)1px,transparent 1px);
+    background-size:40px 40px;pointer-events:none;z-index:0;}
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-ads/6.9.0/videojs.ads.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/videojs-vast-vpaid@2.0.2/bin/videojs.vast.vpaid.min.js"></script> 
-  <!-- Delegate-CH Meta -->
-  <meta http-equiv="Delegate-CH"
-    content="Sec-CH-UA https://s.magsrv.com;
-    Sec-CH-UA-Mobile https://s.magsrv.com;
-    Sec-CH-UA-Arch https://s.magsrv.com;
-    Sec-CH-UA-Model https://s.magsrv.com;
-    Sec-CH-UA-Platform https://s.magsrv.com;
-    Sec-CH-UA-Platform-Version https://s.magsrv.com;
-    Sec-CH-UA-Bitness https://s.magsrv.com;
-    Sec-CH-UA-Full-Version-List https://s.magsrv.com;
-    Sec-CH-UA-Full-Version https://s.magsrv.com;">
+  .page{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:24px 16px 80px;min-height:100vh;display:flex;flex-direction:column;}
 
-  <!-- Video.js -->
-  <link href="https://vjs.zencdn.net/8.5.2/video-js.css" rel="stylesheet" />
-  <script src="https://vjs.zencdn.net/8.5.2/video.min.js"></script>
+  header{display:flex;justify-content:space-between;align-items:center;padding:0 0 32px;}
+  .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--gold);letter-spacing:-.5px;display:flex;align-items:center;gap:8px;}
+  .logo span{color:var(--text);}
 
-  <!-- VAST Plugin -->
-  <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-ads@6.9.0/dist/videojs.ads.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/videojs-vast-vpaid@2.0.2/bin/videojs.vast.vpaid.min.js"></script>
+  .balance-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 24px;text-align:center;margin-bottom:28px;position:relative;overflow:hidden;}
+  .balance-card::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:200px;height:200px;background:radial-gradient(circle,rgba(245,200,66,.12)0%,transparent 70%);pointer-events:none;}
+  .balance-label{font-size:.7rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+  .balance-amount{font-family:'Syne',sans-serif;font-size:3.2rem;font-weight:800;color:var(--gold);line-height:1;display:flex;align-items:center;justify-content:center;gap:10px;}
+  .coin-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),#c9960a);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 2px 12px rgba(245,200,66,.4);flex-shrink:0;}
+  .balance-sub{font-size:.7rem;color:var(--muted);margin-top:8px;}
 
-  <style>
-    body {
-      text-align: center;
-      font-family: Arial;
-      background: #111;
-      color: white;
-    }
+  .stats-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;}
+  .stat-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;}
+  .stat-val{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;}
+  .stat-label{font-size:.65rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;}
 
-    #playerContainer {
-      display: none;
-      margin-top: 20px;
-    }
+  .section-title{font-size:.65rem;color:var(--muted);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:14px;}
+  .earn-card{background:var(--card);border:1px solid rgba(245,200,66,.35);border-radius:20px;padding:24px;margin-bottom:4px;display:flex;align-items:center;gap:18px;}
+  .earn-icon-wrap{width:52px;height:52px;border-radius:14px;background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.2);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
+  .earn-info{flex:1;}
+  .earn-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:4px;}
+  .earn-desc{font-size:.68rem;color:var(--muted);line-height:1.5;}
+  .earn-reward{font-family:'Syne',sans-serif;font-weight:700;color:var(--gold);font-size:1rem;text-align:right;flex-shrink:0;}
+  .earn-reward small{display:block;font-size:.6rem;color:var(--muted);font-family:'Space Mono',monospace;font-weight:400;}
 
-    button {
-      padding: 15px 30px;
-      font-size: 18px;
-      background: #00ffcc;
-      border: none;
-      cursor: pointer;
-      border-radius: 10px;
-    }
-  </style>
+  .btn-earn{width:100%;padding:18px;background:linear-gradient(135deg,#f5c842,#e6a800);color:#0a0a0f;border:none;border-radius:16px;font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;box-shadow:0 4px 20px rgba(245,200,66,.3);margin-top:20px;}
+  .btn-earn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(245,200,66,.45);}
+  .btn-earn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+
+  /* OVERLAY */
+  #ad-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:16px;}
+  #ad-overlay.visible{display:flex;}
+
+  .ad-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:100%;max-width:500px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.8);}
+
+  .ad-top-bar{background:var(--card);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+  .ad-label{font-size:.6rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+  .ad-timer-row{font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;color:var(--gold);display:flex;align-items:center;gap:8px;}
+  .timer-bubble{width:34px;height:34px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;transition:all .3s;}
+  .timer-bubble.done{border-color:var(--success);color:var(--success);}
+
+  .ad-progress{height:4px;background:var(--border);}
+  .ad-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--gold));width:0%;transition:width 1s linear;}
+
+  .ad-video-wrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;overflow:hidden;}
+
+  #ad-video{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:contain;background:#000;display:none;
+  }
+
+  /* tap to start */
+  #tap-screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:rgba(0,0,0,.9);cursor:pointer;z-index:20;}
+  .play-btn{width:68px;height:68px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#000;animation:ripple 1.5s ease-out infinite;}
+  @keyframes ripple{0%{box-shadow:0 0 0 0 rgba(245,200,66,.5)}70%{box-shadow:0 0 0 22px rgba(245,200,66,0)}100%{box-shadow:0 0 0 0 rgba(245,200,66,0)}}
+  #tap-screen p{font-size:.75rem;color:var(--muted);}
+
+  /* spinner */
+  #ad-spinner{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#000;z-index:10;}
+  .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #ad-spinner p{font-size:.7rem;color:var(--muted);}
+
+  /* mute bar */
+  #unmute-bar{display:none;position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.75);padding:8px 14px;font-size:.68rem;color:#fff;text-align:center;cursor:pointer;z-index:30;letter-spacing:.5px;}
+
+  .ad-bottom{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);}
+  .reward-preview{display:flex;align-items:center;gap:8px;font-size:.75rem;color:var(--muted);}
+  .reward-preview strong{color:var(--gold);font-family:'Syne',sans-serif;}
+  .btn-skip{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:9px 16px;font-family:'Space Mono',monospace;font-size:.65rem;cursor:not-allowed;opacity:.35;transition:all .3s;white-space:nowrap;}
+  .btn-skip.ready{cursor:pointer;opacity:1;border-color:var(--success);color:var(--success);animation:glow 1.2s ease-in-out infinite;}
+  @keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(61,220,151,.4)}50%{box-shadow:0 0 0 6px rgba(61,220,151,0)}}
+
+  .toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--success);color:#0a0a0f;font-family:'Syne',sans-serif;font-weight:800;font-size:.95rem;padding:14px 30px;border-radius:50px;z-index:99999;box-shadow:0 8px 30px rgba(61,220,151,.45);opacity:0;transition:all .5s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  .history-list{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+  .history-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;font-size:.72rem;animation:slideIn .4s ease-out;}
+  @keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+  .h-label{color:var(--muted);}
+  .h-amount{color:var(--success);font-family:'Syne',sans-serif;font-weight:700;}
+  @keyframes coinBounce{0%{transform:scale(1)}30%{transform:scale(1.5) rotate(-8deg)}60%{transform:scale(.85) rotate(6deg)}80%{transform:scale(1.2)}100%{transform:scale(1)}}
+  .bounce{animation:coinBounce .6s ease-out;}
+</style>
 </head>
 <body>
 
-  <h1>Earn Coins</h1>
-  <button onclick="showAd()">Earn</button>
+<div class="page">
+  <header>
+    <div class="logo">⬡ <span>Coin</span>Drop</div>
+    <div style="font-size:.7rem;color:var(--muted)">ExoClick</div>
+  </header>
 
-  <div id="playerContainer">
-    <video
-      id="myPlayer"
-      class="video-js vjs-default-skin"
-      controls
-      width="600"
-      height="300">
-    </video>
+  <div class="balance-card">
+    <div class="balance-label">Total Balance</div>
+    <div class="balance-amount">
+      <div class="coin-icon" id="coin-icon">🪙</div>
+      <span id="balance-num">0</span>
+    </div>
+    <div class="balance-sub">COINS</div>
   </div>
 
-  <script>
-function showAd() {
-  document.getElementById("playerContainer").style.display = "block";
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-val" id="ads-watched">0</div><div class="stat-label">Ads Watched</div></div>
+    <div class="stat-box"><div class="stat-val" id="coins-today">0</div><div class="stat-label">Earned Today</div></div>
+  </div>
 
-  var player = videojs('myPlayer');
+  <div class="section-title">Available Tasks</div>
+  <div class="earn-card">
+    <div class="earn-icon-wrap">📺</div>
+    <div class="earn-info">
+      <div class="earn-title">Watch Video Ad</div>
+      <div class="earn-desc">Watch a 30-second ExoClick video ad and earn 1 coin instantly.</div>
+    </div>
+    <div class="earn-reward">+1 <small>COIN / AD</small></div>
+  </div>
 
-  player.ready(function () {
-    player.vastClient({
-      adTagUrl: "https://s.magsrv.com/v1/vast.php?idzone=5877274",
-      playAdAlways: true
+  <button class="btn-earn" id="earn-btn" onclick="openOverlay()">▶ &nbsp;EARN NOW</button>
+
+  <div class="section-title" id="hist-title" style="margin-top:36px;display:none">Recent Earnings</div>
+  <div class="history-list" id="history-list"></div>
+</div>
+
+<!-- AD OVERLAY -->
+<div id="ad-overlay">
+  <div class="ad-box">
+    <div class="ad-top-bar">
+      <div class="ad-label">📢 ExoClick Ad</div>
+      <div class="ad-timer-row">
+        <div class="timer-bubble" id="timer-bubble">30</div>
+        <span id="timer-label">sec left</span>
+      </div>
+    </div>
+    <div class="ad-progress"><div class="ad-progress-fill" id="progress-fill"></div></div>
+
+    <div class="ad-video-wrap">
+      <video id="ad-video" playsinline webkit-playsinline></video>
+      <div id="ad-spinner"><div class="spinner"></div><p>Fetching ExoClick ad…</p></div>
+      <div id="tap-screen" onclick="userTapped()">
+        <div class="play-btn">▶</div>
+        <p>Tap to start ad &amp; earn coin</p>
+      </div>
+      <div id="unmute-bar" onclick="unmuteAd()">🔇 Tap to unmute</div>
+    </div>
+
+    <div class="ad-bottom">
+      <div class="reward-preview">🪙 Earn <strong>+1 Coin</strong> after watching</div>
+      <button class="btn-skip" id="skip-btn" onclick="skipAd()">Wait…</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">🎉 +1 Coin Earned!</div>
+
+<script>
+// ─────────────────────────────────────────
+// VAST proxy: allorigins lets us fetch the
+// ExoClick VAST XML from the browser without
+// hitting CORS restrictions.
+// ─────────────────────────────────────────
+const VAST_URL     = 'https://s.magsrv.com/v1/vast.php?idzone=5877274';
+const PROXY        = 'https://api.allorigins.win/get?url=' + encodeURIComponent(VAST_URL);
+
+// State
+let coins = 0, adsWatched = 0;
+let timerInterval = null, adSeconds = 30;
+let countdownGoing = false, earnedThisRound = false;
+let impressionUrl = null, clickUrl = null;
+
+// DOM
+const overlay    = document.getElementById('ad-overlay');
+const adVideo    = document.getElementById('ad-video');
+const spinner    = document.getElementById('ad-spinner');
+const tapScreen  = document.getElementById('tap-screen');
+const unmuteBar  = document.getElementById('unmute-bar');
+const skipBtn    = document.getElementById('skip-btn');
+const timerBubble= document.getElementById('timer-bubble');
+const timerLabel = document.getElementById('timer-label');
+const progressFill=document.getElementById('progress-fill');
+const earnBtn    = document.getElementById('earn-btn');
+
+// ─────────────────────────────────────────
+// Open overlay
+// ─────────────────────────────────────────
+function openOverlay() {
+  adSeconds = 30; countdownGoing = false; earnedThisRound = false;
+  timerBubble.textContent = '30'; timerBubble.classList.remove('done');
+  timerLabel.textContent = 'sec left';
+  progressFill.style.width = '0%';
+  skipBtn.classList.remove('ready'); skipBtn.textContent = 'Wait…';
+  spinner.style.display = 'none';
+  tapScreen.style.display = 'flex';
+  unmuteBar.style.display = 'none';
+  adVideo.style.display = 'none';
+  adVideo.src = '';
+  clearInterval(timerInterval);
+  impressionUrl = null; clickUrl = null;
+
+  overlay.classList.add('visible');
+  earnBtn.disabled = true;
+}
+
+// ─────────────────────────────────────────
+// User taps play — fetch VAST here
+// (inside user gesture so video.play() works)
+// ─────────────────────────────────────────
+function userTapped() {
+  tapScreen.style.display = 'none';
+  spinner.style.display = 'flex';
+  fetchVAST();
+}
+
+// ─────────────────────────────────────────
+// Fetch & parse VAST via allorigins proxy
+// ─────────────────────────────────────────
+async function fetchVAST() {
+  try {
+    const res  = await fetch(PROXY);
+    const json = await res.json();
+    const xml  = new DOMParser().parseFromString(json.contents, 'text/xml');
+
+    // Extract MediaFile URL (prefer mp4)
+    const mediaFiles = [...xml.querySelectorAll('MediaFile')];
+    let videoSrc = null;
+
+    // prefer mp4
+    for (const mf of mediaFiles) {
+      const t = (mf.getAttribute('type') || '').toLowerCase();
+      if (t.includes('mp4')) { videoSrc = mf.textContent.trim(); break; }
+    }
+    // fallback: any mediafile
+    if (!videoSrc && mediaFiles.length) {
+      videoSrc = mediaFiles[0].textContent.trim();
+    }
+
+    // Grab impression & click tracking URLs
+    const imp = xml.querySelector('Impression');
+    if (imp) impressionUrl = imp.textContent.trim();
+
+    const click = xml.querySelector('ClickThrough');
+    if (click) clickUrl = click.textContent.trim();
+
+    if (!videoSrc) throw new Error('No MediaFile found in VAST');
+
+    playAd(videoSrc);
+
+  } catch(err) {
+    console.warn('VAST fetch failed:', err);
+    // Still count down even if ad can't load
+    spinner.style.display = 'none';
+    showNoAdMsg();
+    beginCountdown();
+  }
+}
+
+// ─────────────────────────────────────────
+// Play the ad video
+// ─────────────────────────────────────────
+function playAd(src) {
+  spinner.style.display = 'none';
+  adVideo.style.display = 'block';
+  adVideo.src = src;
+  adVideo.muted = true; // start muted (browser policy)
+
+  adVideo.oncanplay = () => {
+    // Fire impression pixel
+    if (impressionUrl) new Image().src = impressionUrl;
+
+    adVideo.play().then(() => {
+      // Try to unmute
+      adVideo.muted = false;
+      adVideo.volume = 1;
+      unmuteBar.style.display = 'none';
+      beginCountdown();
+    }).catch(() => {
+      // Must stay muted to autoplay
+      unmuteBar.style.display = 'block';
+      beginCountdown();
     });
+  };
 
-    player.play();
+  adVideo.onerror = () => {
+    adVideo.style.display = 'none';
+    showNoAdMsg();
+    beginCountdown();
+  };
+
+  adVideo.onended = () => {
+    // Video ended before 30s timer — just wait for timer
+  };
+
+  // Make ad clickable
+  adVideo.onclick = () => {
+    if (clickUrl) window.open(clickUrl, '_blank');
+  };
+}
+
+function unmuteAd() {
+  adVideo.muted = false;
+  adVideo.volume = 1;
+  unmuteBar.style.display = 'none';
+}
+
+// ─────────────────────────────────────────
+// Fallback message when ad can't load
+// ─────────────────────────────────────────
+function showNoAdMsg() {
+  const wrap = document.querySelector('.ad-video-wrap');
+  const el = document.createElement('div');
+  el.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#0a0a0f;z-index:5;';
+  el.innerHTML = '<div style="font-size:2.5rem">📺</div><p style="font-size:.72rem;color:#6b6b8a;text-align:center;max-width:220px;line-height:1.7">Ad is loading in the background.<br>Please wait for the countdown.</p>';
+  wrap.appendChild(el);
+}
+
+// ─────────────────────────────────────────
+// 30-second countdown
+// ─────────────────────────────────────────
+function beginCountdown() {
+  if (countdownGoing) return;
+  countdownGoing = true;
+  clearInterval(timerInterval);
+
+  timerInterval = setInterval(() => {
+    adSeconds--;
+    if (adSeconds < 0) adSeconds = 0;
+
+    timerBubble.textContent = adSeconds;
+    progressFill.style.width = ((30 - adSeconds) / 30 * 100) + '%';
+
+    if (adSeconds <= 5) {
+      skipBtn.classList.add('ready');
+      skipBtn.textContent = adSeconds > 0 ? `Claim (${adSeconds})` : '✓ Claim';
+    }
+
+    if (adSeconds <= 0) {
+      clearInterval(timerInterval);
+      timerBubble.textContent = '✓';
+      timerBubble.classList.add('done');
+      timerLabel.textContent = 'done!';
+      doEarn();
+    }
+  }, 1000);
+}
+
+// ─────────────────────────────────────────
+// Skip / Claim button
+// ─────────────────────────────────────────
+function skipAd() {
+  if (!skipBtn.classList.contains('ready')) return;
+  clearInterval(timerInterval);
+  doEarn();
+}
+
+// ─────────────────────────────────────────
+// Earn coin (once per round)
+// ─────────────────────────────────────────
+function doEarn() {
+  if (earnedThisRound) return;
+  earnedThisRound = true;
+  closeOverlay();
+
+  coins++; adsWatched++;
+  document.getElementById('balance-num').textContent = coins;
+  document.getElementById('ads-watched').textContent = adsWatched;
+  document.getElementById('coins-today').textContent = coins;
+
+  const icon = document.getElementById('coin-icon');
+  icon.classList.remove('bounce');
+  void icon.offsetWidth;
+  icon.classList.add('bounce');
+
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2800);
+
+  addHistory();
+}
+
+// ─────────────────────────────────────────
+// Close overlay
+// ─────────────────────────────────────────
+function closeOverlay() {
+  overlay.classList.remove('visible');
+  earnBtn.disabled = false;
+  adVideo.pause();
+  adVideo.src = '';
+  adVideo.style.display = 'none';
+  // remove any fallback msg divs
+  document.querySelectorAll('.ad-video-wrap > div[style]').forEach(el => {
+    if (!el.id) el.remove();
   });
 }
-</script>
 
+// ─────────────────────────────────────────
+// History
+// ─────────────────────────────────────────
+function addHistory() {
+  document.getElementById('hist-title').style.display = 'block';
+  const time = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  const item = document.createElement('div');
+  item.className = 'history-item';
+  item.innerHTML = `<div class="h-label">📺 Video Ad #${adsWatched} · ${time}</div><div class="h-amount">+1 🪙</div>`;
+  const list = document.getElementById('history-list');
+  list.insertBefore(item, list.firstChild);
+}
+</script>
 </body>
 </html>
