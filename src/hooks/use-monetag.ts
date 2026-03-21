@@ -32,12 +32,12 @@ export function useMonetag() {
       script.setAttribute('data-zone', zoneId);
       script.async = true;
       script.setAttribute('data-cfasync', 'false');
-      
+
       script.onload = () => {
-        console.log('Monetag script loaded successfully for 30-second ad');
+        console.log('Monetag script loaded for 30-second ad');
         resolve();
       };
-      
+
       script.onerror = () => {
         console.error('Failed to load Monetag script');
         reject(new Error('Failed to load Monetag script'));
@@ -51,21 +51,27 @@ export function useMonetag() {
   const showAd = useCallback(async (zoneId: string = '221737'): Promise<boolean> => {
     try {
       await loadScript(zoneId);
-      
-      // Wait a bit longer for the script to initialize for 30-second ads
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Trigger the ad
+
+      // Wait for script initialization
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Trigger the 30-second ad only
       if (window.monetag && typeof window.monetag.invoke === 'function') {
-        window.monetag.invoke();
-        console.log('30-second Monetag ad triggered');
+        // Configure for 30-second ad with no additional notifications
+        window.monetag.invoke({
+          type: 'video', // Ensure it's a video ad
+          duration: 30,  // 30 seconds
+          skipable: false, // Cannot skip
+          notifications: false // No additional notifications
+        });
+        console.log('30-second ad triggered - user must watch full duration');
         return true;
       } else {
         console.warn('Monetag not properly initialized');
         return false;
       }
     } catch (error) {
-      console.error('Error showing Monetag ad:', error);
+      console.error('Error showing 30-second ad:', error);
       return false;
     }
   }, [loadScript]);
@@ -74,6 +80,10 @@ export function useMonetag() {
     if (scriptRef.current) {
       document.head.removeChild(scriptRef.current);
       scriptRef.current = null;
+    }
+    // Clear any monetag references
+    if (window.monetag) {
+      delete window.monetag;
     }
   }, []);
 

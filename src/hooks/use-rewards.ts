@@ -52,9 +52,9 @@ export function useClaimReward() {
         
         return json as RewardResponse;
       } catch (error) {
-        // For development, simulate reward claiming
+        // For development, simulate reward claiming - fixed 1 coin for ads
         console.log("Using mock reward claiming for development");
-        const rewardAmount = Math.floor(Math.random() * 50) + 25; // 25-75 coins
+        const rewardAmount = 1; // Fixed 1 coin for watching full ad
         return {
           amount: rewardAmount,
           newBalance: 1250 + rewardAmount
