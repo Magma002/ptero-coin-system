@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { useClaimReward } from "@/hooks/use-rewards";
-import { useAdsterra } from "@/hooks/use-adsterra";
+import { useExoClick } from "@/hooks/use-exoclick";;
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, Loader2, CheckCircle2 } from "lucide-react";
@@ -13,7 +13,7 @@ export default function Earn() {
   const [status, setStatus] = useState<AdStatus>('idle');
   const [timeLeft, setTimeLeft] = useState(0);
   const claimMutation = useClaimReward();
-  const { showAd, closeAd, cleanup } = useAdsterra();
+  const { showAd, closeAd, cleanup } = useExoClick();
   const { toast } = useToast();
 
   const handleWatchAd = async () => {
@@ -147,22 +147,22 @@ export default function Earn() {
                 </div>
                 <h2 className="text-4xl font-display font-bold mb-4">Ready to Earn?</h2>
                 <p className="text-muted-foreground mb-10 max-w-md text-lg">
-                  Watch a 30-second Adsterra video advertisement to earn exactly 1 coin. You must watch the full ad to receive your reward.
+                  Watch a 30-second ExoClick video advertisement to earn exactly 1 coin. You must watch the full ad to receive your reward.
                 </p>
-                <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg max-w-md">
-                  <p className="text-yellow-400 text-sm">
-                    ⚠️ Currently showing simulated ads. Update Adsterra script for real video ads.
+                <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg max-w-md">
+                  <p className="text-green-400 text-sm">
+                    ✅ ExoClick verification added. Waiting for account approval.
                   </p>
                 </div>
                 <button onClick={handleWatchAd} className="px-12 py-5 rounded-full bg-white text-black font-bold text-xl hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:shadow-[0_0_50px_rgba(255,255,255,0.5)]">
-                  Watch 30s Adsterra Ad & Earn 1 Coin
+                  Watch 30s ExoClick Ad & Earn 1 Coin
                 </button>
               </motion.div>
             )}
             {status === 'loading' && (
               <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center text-primary">
                 <Loader2 className="w-20 h-20 animate-spin mb-6 drop-shadow-[0_0_15px_rgba(139,92,246,0.8)]" />
-                <h3 className="text-2xl font-bold">Loading Adsterra Advertisement...</h3>
+                <h3 className="text-2xl font-bold">Loading ExoClick Advertisement...</h3>
                 <p className="text-muted-foreground mt-2">Please wait a moment</p>
               </motion.div>
             )}
@@ -175,7 +175,7 @@ export default function Earn() {
                   </svg>
                   <span className="text-5xl font-display font-bold neon-text">{timeLeft}</span>
                 </div>
-                <h3 className="text-2xl font-semibold mb-2">Adsterra Advertisement Playing...</h3>
+                <h3 className="text-2xl font-semibold mb-2">ExoClick Advertisement Playing...</h3>
                 <p className="text-muted-foreground">Stay on this page for the full 30 seconds to earn 1 coin</p>
                 {timeLeft <= 10 && <p className="text-yellow-400 mt-2 text-sm">Almost done! Keep watching...</p>}
               </motion.div>
