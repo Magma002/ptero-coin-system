@@ -14,17 +14,12 @@
     --card: #1c1c28;
     --border: #2a2a3d;
     --gold: #f5c842;
-    --gold2: #ffdd77;
     --accent: #7c6af7;
     --text: #e8e8f0;
     --muted: #6b6b8a;
     --success: #3ddc97;
-    --danger: #ff5f6d;
-    --glow: 0 0 30px rgba(245,200,66,0.25);
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
+  * { margin:0; padding:0; box-sizing:border-box; }
   body {
     background: var(--bg);
     color: var(--text);
@@ -32,490 +27,254 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-
-  /* Background grid */
   body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
+    content:'';
+    position:fixed; inset:0;
     background-image:
       linear-gradient(rgba(124,106,247,0.03) 1px, transparent 1px),
       linear-gradient(90deg, rgba(124,106,247,0.03) 1px, transparent 1px);
     background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
+    pointer-events:none; z-index:0;
   }
-
   .page {
-    position: relative;
-    z-index: 1;
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 24px 16px 80px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    position:relative; z-index:1;
+    max-width:480px; margin:0 auto;
+    padding:24px 16px 80px;
+    min-height:100vh;
+    display:flex; flex-direction:column;
   }
 
-  /* Header */
+  /* HEADER */
   header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 0 32px;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:0 0 32px;
   }
-
   .logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 1.3rem;
-    color: var(--gold);
-    letter-spacing: -0.5px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-family:'Syne',sans-serif; font-weight:800; font-size:1.3rem;
+    color:var(--gold); letter-spacing:-0.5px;
+    display:flex; align-items:center; gap:8px;
   }
-  .logo span { color: var(--text); }
+  .logo span { color:var(--text); }
 
-  /* Coin balance */
+  /* BALANCE */
   .balance-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 28px 24px;
-    text-align: center;
-    margin-bottom: 28px;
-    position: relative;
-    overflow: hidden;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:20px; padding:28px 24px;
+    text-align:center; margin-bottom:28px;
+    position:relative; overflow:hidden;
   }
   .balance-card::before {
-    content: '';
-    position: absolute;
-    top: -60px; left: 50%; transform: translateX(-50%);
-    width: 200px; height: 200px;
-    background: radial-gradient(circle, rgba(245,200,66,0.12) 0%, transparent 70%);
-    pointer-events: none;
+    content:''; position:absolute; top:-60px; left:50%; transform:translateX(-50%);
+    width:200px; height:200px;
+    background:radial-gradient(circle, rgba(245,200,66,0.12) 0%, transparent 70%);
+    pointer-events:none;
   }
-
-  .balance-label {
-    font-size: 0.7rem;
-    color: var(--muted);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-
+  .balance-label { font-size:0.7rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; }
   .balance-amount {
-    font-family: 'Syne', sans-serif;
-    font-size: 3.2rem;
-    font-weight: 800;
-    color: var(--gold);
-    line-height: 1;
-    transition: all 0.4s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+    font-family:'Syne',sans-serif; font-size:3.2rem; font-weight:800;
+    color:var(--gold); line-height:1;
+    display:flex; align-items:center; justify-content:center; gap:10px;
   }
-
   .coin-icon {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, var(--gold), #c9960a);
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    box-shadow: 0 2px 12px rgba(245,200,66,0.4);
-    flex-shrink: 0;
+    width:36px; height:36px;
+    background:linear-gradient(135deg,var(--gold),#c9960a);
+    border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
+    font-size:1.1rem; box-shadow:0 2px 12px rgba(245,200,66,0.4); flex-shrink:0;
   }
+  .balance-sub { font-size:0.7rem; color:var(--muted); margin-top:8px; }
 
-  .balance-sub {
-    font-size: 0.7rem;
-    color: var(--muted);
-    margin-top: 8px;
-  }
-
-  /* Stats row */
-  .stats-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 28px;
-  }
-
+  /* STATS */
+  .stats-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:28px; }
   .stat-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px;
-    text-align: center;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:14px; padding:16px; text-align:center;
   }
+  .stat-val { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:700; color:var(--text); }
+  .stat-label { font-size:0.65rem; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; margin-top:4px; }
 
-  .stat-val {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--text);
-  }
-
-  .stat-label {
-    font-size: 0.65rem;
-    color: var(--muted);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    margin-top: 4px;
-  }
-
-  /* Earn Section */
-  .section-title {
-    font-size: 0.65rem;
-    color: var(--muted);
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-  }
-
+  /* EARN CARD */
+  .section-title { font-size:0.65rem; color:var(--muted); letter-spacing:2.5px; text-transform:uppercase; margin-bottom:14px; }
   .earn-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 24px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    position: relative;
-    overflow: hidden;
-    cursor: default;
+    background:var(--card); border:1px solid rgba(245,200,66,0.35);
+    border-radius:20px; padding:24px; margin-bottom:16px;
+    display:flex; align-items:center; gap:18px;
   }
-
-  .earn-card.active {
-    border-color: rgba(245,200,66,0.35);
-  }
-
   .earn-icon-wrap {
-    width: 52px; height: 52px;
-    border-radius: 14px;
-    background: rgba(245,200,66,0.1);
-    border: 1px solid rgba(245,200,66,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    flex-shrink: 0;
+    width:52px; height:52px; border-radius:14px;
+    background:rgba(245,200,66,0.1); border:1px solid rgba(245,200,66,0.2);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.5rem; flex-shrink:0;
   }
+  .earn-info { flex:1; }
+  .earn-title { font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; margin-bottom:4px; }
+  .earn-desc { font-size:0.68rem; color:var(--muted); line-height:1.5; }
+  .earn-reward { font-family:'Syne',sans-serif; font-weight:700; color:var(--gold); font-size:1rem; text-align:right; flex-shrink:0; }
+  .earn-reward small { display:block; font-size:0.6rem; color:var(--muted); font-family:'Space Mono',monospace; font-weight:400; }
 
-  .earn-info { flex: 1; }
-  .earn-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 0.95rem;
-    margin-bottom: 4px;
-  }
-  .earn-desc {
-    font-size: 0.68rem;
-    color: var(--muted);
-    line-height: 1.5;
-  }
-
-  .earn-reward {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    color: var(--gold);
-    font-size: 1rem;
-    text-align: right;
-    flex-shrink: 0;
-  }
-  .earn-reward small {
-    display: block;
-    font-size: 0.6rem;
-    color: var(--muted);
-    font-family: 'Space Mono', monospace;
-    font-weight: 400;
-  }
-
-  /* EARN BUTTON */
+  /* BUTTON */
   .btn-earn {
-    width: 100%;
-    padding: 18px;
-    background: linear-gradient(135deg, #f5c842, #e6a800);
-    color: #0a0a0f;
-    border: none;
-    border-radius: 16px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 1.05rem;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: all 0.2s;
-    box-shadow: 0 4px 20px rgba(245,200,66,0.3);
-    position: relative;
-    overflow: hidden;
-    margin-top: 24px;
+    width:100%; padding:18px;
+    background:linear-gradient(135deg,#f5c842,#e6a800);
+    color:#0a0a0f; border:none; border-radius:16px;
+    font-family:'Syne',sans-serif; font-weight:800; font-size:1.05rem;
+    letter-spacing:0.5px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    transition:all 0.2s;
+    box-shadow:0 4px 20px rgba(245,200,66,0.3);
+    position:relative; overflow:hidden; margin-top:24px;
   }
+  .btn-earn:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(245,200,66,0.45); }
+  .btn-earn:active { transform:translateY(0); }
+  .btn-earn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
 
-  .btn-earn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(245,200,66,0.45);
-  }
-
-  .btn-earn:active { transform: translateY(0); }
-
-  .btn-earn::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-    pointer-events: none;
-  }
-
-  /* AD OVERLAY */
+  /* ─── AD OVERLAY ─── */
   #ad-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.92);
-    z-index: 1000;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,0.96); z-index:1000;
+    flex-direction:column; align-items:center; justify-content:center; padding:16px;
   }
-
-  #ad-overlay.visible { display: flex; }
+  #ad-overlay.visible { display:flex; }
 
   .ad-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    width: 100%;
-    max-width: 480px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:20px; width:100%; max-width:480px;
+    overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.7);
   }
 
   .ad-top-bar {
-    background: var(--card);
-    padding: 12px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
+    background:var(--card); padding:12px 18px;
+    display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid var(--border);
   }
-
-  .ad-label {
-    font-size: 0.6rem;
-    color: var(--muted);
-    letter-spacing: 2px;
-    text-transform: uppercase;
+  .ad-label { font-size:0.6rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase; }
+  .ad-timer { font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; color:var(--gold); display:flex; align-items:center; gap:8px; }
+  .timer-bubble {
+    width:32px; height:32px; border-radius:50%;
+    border:2px solid var(--gold);
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.75rem; font-weight:700;
+    transition:border-color 0.3s;
   }
+  .timer-bubble.done { border-color:var(--success); color:var(--success); }
 
-  .ad-timer {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 0.85rem;
-    color: var(--gold);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
+  /* Progress */
+  .ad-progress { height:4px; background:var(--border); }
+  .ad-progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--gold)); width:0%; transition:width 1s linear; }
 
-  .timer-circle {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    border: 2px solid var(--gold);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    position: relative;
-  }
-
+  /* VIDEO AREA */
   .ad-video-wrap {
-    position: relative;
-    width: 100%;
-    padding-bottom: 56.25%;
-    background: #000;
+    position:relative; width:100%; background:#000;
+    /* 16:9 */
+    aspect-ratio: 16/9;
+    display:flex; align-items:center; justify-content:center;
   }
 
-  .ad-video-wrap video,
-  .ad-video-wrap iframe {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
+  #ad-video {
+    width:100%; height:100%; display:block; background:#000;
+    object-fit:contain;
   }
 
-  .ad-placeholder {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: var(--muted);
-    font-size: 0.75rem;
-    gap: 10px;
-    background: #0a0a0f;
+  /* Loading spinner overlay on video */
+  .video-loading {
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:#000; gap:14px; z-index:2;
+    transition:opacity 0.4s;
   }
-
-  .ad-placeholder .play-icon {
-    font-size: 3rem;
-    color: var(--gold);
-    opacity: 0.5;
+  .spinner {
+    width:40px; height:40px;
+    border:3px solid var(--border);
+    border-top-color:var(--gold);
+    border-radius:50%;
+    animation:spin 0.8s linear infinite;
   }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .video-loading p { font-size:0.72rem; color:var(--muted); }
 
+  /* Tap to unmute bar */
+  .unmute-bar {
+    display:none;
+    position:absolute; bottom:0; left:0; right:0;
+    background:rgba(0,0,0,0.75);
+    padding:8px 14px;
+    font-size:0.68rem; color:#fff;
+    text-align:center; cursor:pointer; z-index:3;
+    letter-spacing:0.5px;
+  }
+  .unmute-bar:hover { background:rgba(0,0,0,0.9); }
+
+  /* AD BOTTOM */
   .ad-bottom {
-    padding: 16px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    padding:14px 18px; display:flex; align-items:center; justify-content:space-between;
+    border-top:1px solid var(--border);
   }
-
-  .reward-preview {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.75rem;
-    color: var(--muted);
-  }
-
-  .reward-preview strong {
-    color: var(--gold);
-    font-family: 'Syne', sans-serif;
-  }
+  .reward-preview { display:flex; align-items:center; gap:8px; font-size:0.75rem; color:var(--muted); }
+  .reward-preview strong { color:var(--gold); font-family:'Syne',sans-serif; }
 
   .btn-skip {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.65rem;
-    cursor: not-allowed;
-    opacity: 0.4;
-    transition: all 0.3s;
+    background:transparent; border:1px solid var(--border);
+    color:var(--muted); border-radius:8px; padding:9px 16px;
+    font-family:'Space Mono',monospace; font-size:0.65rem;
+    cursor:not-allowed; opacity:0.35; transition:all 0.3s; white-space:nowrap;
   }
-
   .btn-skip.ready {
-    cursor: pointer;
-    opacity: 1;
-    border-color: var(--success);
-    color: var(--success);
+    cursor:pointer; opacity:1;
+    border-color:var(--success); color:var(--success);
+    animation:pulse 1.2s ease-in-out infinite;
   }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(61,220,151,0.4)} 50%{box-shadow:0 0 0 6px rgba(61,220,151,0)} }
 
-  /* Progress bar */
-  .ad-progress {
-    height: 3px;
-    background: var(--border);
-    width: 100%;
-  }
-
-  .ad-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--gold));
-    width: 0%;
-    transition: width 1s linear;
-  }
-
-  /* REWARD TOAST */
+  /* TOAST */
   .reward-toast {
-    display: none;
-    position: fixed;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--success);
-    color: #0a0a0f;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 0.9rem;
-    padding: 14px 28px;
-    border-radius: 50px;
-    z-index: 2000;
-    box-shadow: 0 8px 30px rgba(61,220,151,0.4);
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    white-space: nowrap;
+    position:fixed; bottom:40px; left:50%; transform:translateX(-50%) translateY(60px);
+    background:var(--success); color:#0a0a0f;
+    font-family:'Syne',sans-serif; font-weight:800; font-size:0.95rem;
+    padding:14px 30px; border-radius:50px; z-index:2000;
+    box-shadow:0 8px 30px rgba(61,220,151,0.45);
+    opacity:0; transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events:none; white-space:nowrap;
   }
+  .reward-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-  .reward-toast.show {
-    display: block;
-    transform: translateX(-50%) translateY(0);
-  }
-
-  /* Coin bounce animation */
-  @keyframes coinBounce {
-    0%   { transform: scale(1); }
-    30%  { transform: scale(1.4) rotate(-5deg); }
-    60%  { transform: scale(0.9) rotate(5deg); }
-    80%  { transform: scale(1.15); }
-    100% { transform: scale(1); }
-  }
-
-  .bounce { animation: coinBounce 0.6s ease-out; }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-
-  .pulsing { animation: pulse 1.5s ease-in-out infinite; }
-
-  /* History */
-  .history-list {
-    margin-top: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
+  /* HISTORY */
+  .history-list { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
   .history-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.72rem;
-    animation: slideIn 0.4s ease-out;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:12px 16px;
+    display:flex; align-items:center; justify-content:space-between;
+    font-size:0.72rem;
+    animation:slideIn 0.4s ease-out;
   }
+  @keyframes slideIn { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+  .h-label { color:var(--muted); }
+  .h-amount { color:var(--success); font-family:'Syne',sans-serif; font-weight:700; }
 
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to   { opacity: 1; transform: translateY(0); }
+  /* Coin bounce */
+  @keyframes coinBounce {
+    0%{transform:scale(1)} 30%{transform:scale(1.5) rotate(-8deg)}
+    60%{transform:scale(0.85) rotate(6deg)} 80%{transform:scale(1.2)}
+    100%{transform:scale(1)}
   }
-
-  .history-item .h-label { color: var(--muted); }
-  .history-item .h-amount { color: var(--success); font-family: 'Syne', sans-serif; font-weight: 700; }
+  .bounce { animation:coinBounce 0.6s ease-out; }
 </style>
 </head>
 <body>
 
 <div class="page">
   <header>
-    <div class="logo">⬡<span>Coin</span>Drop</div>
-    <div style="font-size:0.7rem;color:var(--muted);">v1.0</div>
+    <div class="logo">⬡ <span>Coin</span>Drop</div>
+    <div style="font-size:0.7rem;color:var(--muted)">v1.1</div>
   </header>
 
-  <!-- Balance -->
   <div class="balance-card">
     <div class="balance-label">Total Balance</div>
-    <div class="balance-amount" id="balance">
+    <div class="balance-amount">
       <div class="coin-icon" id="coin-icon">🪙</div>
       <span id="balance-num">0</span>
     </div>
     <div class="balance-sub">COINS</div>
   </div>
 
-  <!-- Stats -->
   <div class="stats-row">
     <div class="stat-box">
       <div class="stat-val" id="ads-watched">0</div>
@@ -527,26 +286,19 @@
     </div>
   </div>
 
-  <!-- Earn Card -->
   <div class="section-title">Available Tasks</div>
-  <div class="earn-card active">
+  <div class="earn-card">
     <div class="earn-icon-wrap">📺</div>
     <div class="earn-info">
       <div class="earn-title">Watch Video Ad</div>
-      <div class="earn-desc">Watch a 30-second ad and earn coins instantly. Unlimited times per day.</div>
+      <div class="earn-desc">Watch a 30-second video ad and earn 1 coin instantly.</div>
     </div>
-    <div class="earn-reward">
-      +1
-      <small>COIN / AD</small>
-    </div>
+    <div class="earn-reward">+1 <small>COIN / AD</small></div>
   </div>
 
-  <button class="btn-earn" onclick="startAd()">
-    ▶ &nbsp;EARN NOW
-  </button>
+  <button class="btn-earn" id="earn-btn" onclick="startAd()">▶ &nbsp;EARN NOW</button>
 
-  <!-- History -->
-  <div class="section-title" style="margin-top:36px;" id="hist-title" style="display:none">Recent Earnings</div>
+  <div class="section-title" id="hist-title" style="margin-top:36px;display:none">Recent Earnings</div>
   <div class="history-list" id="history-list"></div>
 </div>
 
@@ -556,240 +308,214 @@
     <div class="ad-top-bar">
       <div class="ad-label">📢 Sponsored Ad</div>
       <div class="ad-timer">
-        <div class="timer-circle" id="timer-num">30</div>
-        sec left
+        <div class="timer-bubble" id="timer-bubble">30</div>
+        <span id="timer-label">sec left</span>
       </div>
     </div>
     <div class="ad-progress"><div class="ad-progress-fill" id="progress-fill"></div></div>
 
     <div class="ad-video-wrap">
-      <!-- VAST Ad Player via video.js or iframe -->
-      <div class="ad-placeholder" id="ad-placeholder">
-        <div class="play-icon pulsing">▶</div>
-        <div>Loading Ad...</div>
+      <!-- Loading state -->
+      <div class="video-loading" id="video-loading">
+        <div class="spinner"></div>
+        <p>Loading ad...</p>
       </div>
-      <div id="vast-container" style="position:absolute;inset:0;"></div>
+
+      <!-- The actual video -->
+      <video id="ad-video"
+        playsinline
+        preload="auto"
+      ></video>
+
+      <!-- Tap to unmute nudge -->
+      <div class="unmute-bar" id="unmute-bar" onclick="unmuteVideo()">
+        🔇 Tap to unmute
+      </div>
     </div>
 
     <div class="ad-bottom">
-      <div class="reward-preview">🪙 Reward: <strong>+1 Coin</strong> after watching</div>
-      <button class="btn-skip" id="skip-btn" onclick="skipAd()">SKIP</button>
+      <div class="reward-preview">🪙 Earn <strong>+1 Coin</strong> after watching</div>
+      <button class="btn-skip" id="skip-btn" onclick="skipAd()">Wait…</button>
     </div>
   </div>
 </div>
 
-<!-- Reward toast -->
 <div class="reward-toast" id="reward-toast">🎉 +1 Coin Earned!</div>
 
 <script>
-  let coins = 0;
-  let adsWatched = 0;
-  let timerInterval = null;
-  let adSeconds = 30;
+  // ─── The MP4 extracted directly from the VAST XML ───
+  // (VAST fetch would fail due to CORS in browser — this is the real video URL)
+  const AD_VIDEO_URL = 'https://u3y8v8u4.aucdn.net/library/954422/d827d4f052fcfb32776e26c12061f9483b5ed6cf.mp4';
+
+  // Impression & click tracking pixels from VAST (fire silently)
+  const IMPRESSION_URL = 'https://s.magsrv.com/vregister.php?a=vimp&tracking_event=impression&t=imp&idzone=5877274&is_vast=1&should_log=0&cb=' + Math.random();
+
+  let coins = 0, adsWatched = 0;
+  let timerInterval = null, adSeconds = 30;
+  let timerStarted = false;
+
+  const video    = document.getElementById('ad-video');
+  const loading  = document.getElementById('video-loading');
+  const skipBtn  = document.getElementById('skip-btn');
+  const timerBubble = document.getElementById('timer-bubble');
+  const timerLabel  = document.getElementById('timer-label');
+  const progressFill = document.getElementById('progress-fill');
+  const unmuteBar = document.getElementById('unmute-bar');
+
+  function firePixel(url) {
+    try { new Image().src = url; } catch(e) {}
+  }
 
   function startAd() {
-    // Reset
-    adSeconds = 30;
-    document.getElementById('timer-num').textContent = '30';
-    document.getElementById('progress-fill').style.width = '0%';
-    document.getElementById('skip-btn').classList.remove('ready');
-    document.getElementById('ad-placeholder').style.display = 'flex';
+    // Reset state
+    adSeconds = 30; timerStarted = false;
+    timerBubble.textContent = '30';
+    timerBubble.classList.remove('done');
+    timerLabel.textContent = 'sec left';
+    progressFill.style.width = '0%';
+    skipBtn.classList.remove('ready');
+    skipBtn.textContent = 'Wait…';
+    loading.style.display = 'flex';
+    unmuteBar.style.display = 'none';
+
+    // Reset & load video
+    video.pause();
+    video.currentTime = 0;
+    video.muted = true;          // start muted (browser autoplay policy)
+    video.src = AD_VIDEO_URL;
+    video.load();
 
     // Show overlay
     document.getElementById('ad-overlay').classList.add('visible');
+    document.getElementById('earn-btn').disabled = true;
 
-    // Load VAST ad
-    loadVastAd();
+    // Fire impression pixel
+    firePixel(IMPRESSION_URL);
+  }
 
-    // Start countdown
+  // ── Video events ──
+  video.addEventListener('canplay', () => {
+    loading.style.display = 'none';
+
+    // Try unmuted first
+    video.muted = false;
+    video.play().then(() => {
+      unmuteBar.style.display = 'none';
+      beginCountdown();
+    }).catch(() => {
+      // Autoplay blocked without mute → play muted, show unmute bar
+      video.muted = true;
+      video.play().then(() => {
+        unmuteBar.style.display = 'block';
+        beginCountdown();
+      }).catch(() => {
+        // Still blocked — show tap to play
+        loading.style.display = 'flex';
+        loading.innerHTML = `
+          <div style="font-size:3rem;cursor:pointer;color:var(--gold)" id="play-btn">▶</div>
+          <p>Tap to play ad</p>
+        `;
+        document.getElementById('play-btn').onclick = () => {
+          video.muted = true;
+          video.play().then(() => {
+            loading.style.display = 'none';
+            unmuteBar.style.display = 'block';
+            beginCountdown();
+          });
+        };
+      });
+    });
+  });
+
+  video.addEventListener('error', () => {
+    loading.innerHTML = `<p style="color:var(--muted);text-align:center;padding:20px">Ad could not load.<br>Counting down anyway…</p>`;
+    beginCountdown();
+  });
+
+  video.addEventListener('ended', () => {
+    if (adSeconds > 0) {
+      // Video shorter than 30s — wait out remaining timer
+    }
+  });
+
+  function unmuteVideo() {
+    video.muted = false;
+    unmuteBar.style.display = 'none';
+  }
+
+  function beginCountdown() {
+    if (timerStarted) return;
+    timerStarted = true;
     clearInterval(timerInterval);
+
     timerInterval = setInterval(() => {
       adSeconds--;
-      document.getElementById('timer-num').textContent = adSeconds;
-      const pct = ((30 - adSeconds) / 30) * 100;
-      document.getElementById('progress-fill').style.width = pct + '%';
+      if (adSeconds < 0) adSeconds = 0;
 
-      if (adSeconds <= 5) {
-        document.getElementById('skip-btn').classList.add('ready');
-        document.getElementById('skip-btn').textContent = adSeconds > 0 ? `CLAIM (${adSeconds})` : 'CLAIM';
+      timerBubble.textContent = adSeconds;
+      progressFill.style.width = ((30 - adSeconds) / 30 * 100) + '%';
+
+      if (adSeconds <= 5 && adSeconds > 0) {
+        skipBtn.classList.add('ready');
+        skipBtn.textContent = 'Claim (' + adSeconds + ')';
       }
 
       if (adSeconds <= 0) {
         clearInterval(timerInterval);
+        timerBubble.textContent = '✓';
+        timerBubble.classList.add('done');
+        timerLabel.textContent = 'done!';
+        skipBtn.classList.add('ready');
+        skipBtn.textContent = '✓ Claim';
         earnCoin();
       }
     }, 1000);
   }
 
-  function loadVastAd() {
-    const container = document.getElementById('vast-container');
-    container.innerHTML = '';
-
-    // Create video element
-    const video = document.createElement('video');
-    video.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;background:#000;';
-    video.controls = false;
-    video.autoplay = true;
-    video.muted = false;
-    video.playsInline = true;
-
-    container.appendChild(video);
-
-    // Fetch VAST XML and parse
-    const vastUrl = 'https://s.magsrv.com/v1/vast.php?idzone=5877274';
-
-    fetch(vastUrl)
-      .then(r => r.text())
-      .then(xml => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(xml, 'text/xml');
-
-        // Try to get MediaFile URL
-        const mediaFiles = doc.querySelectorAll('MediaFile');
-        let videoUrl = null;
-
-        mediaFiles.forEach(mf => {
-          const type = mf.getAttribute('type') || '';
-          if (!videoUrl && type.includes('mp4')) {
-            videoUrl = mf.textContent.trim();
-          }
-        });
-
-        if (!videoUrl && mediaFiles.length > 0) {
-          videoUrl = mediaFiles[0].textContent.trim();
-        }
-
-        if (videoUrl) {
-          video.src = videoUrl;
-          video.play().catch(() => {
-            // autoplay blocked - show placeholder with play button
-            showManualPlay(video);
-          });
-          document.getElementById('ad-placeholder').style.display = 'none';
-        } else {
-          // Try clickthrough / redirect
-          const vast2 = doc.querySelector('VASTAdTagURI');
-          if (vast2) {
-            // Wrapper VAST — try nested
-            fetch(vast2.textContent.trim())
-              .then(r2 => r2.text())
-              .then(xml2 => parseVast2(xml2, video))
-              .catch(() => showFallbackAd());
-          } else {
-            showFallbackAd();
-          }
-        }
-      })
-      .catch(() => {
-        // CORS issue — use iframe approach
-        showFallbackAd();
-      });
-  }
-
-  function parseVast2(xml, video) {
-    const doc = (new DOMParser()).parseFromString(xml, 'text/xml');
-    const mediaFiles = doc.querySelectorAll('MediaFile');
-    let videoUrl = null;
-    mediaFiles.forEach(mf => {
-      if (!videoUrl && (mf.getAttribute('type') || '').includes('mp4'))
-        videoUrl = mf.textContent.trim();
-    });
-    if (!videoUrl && mediaFiles.length > 0) videoUrl = mediaFiles[0].textContent.trim();
-    if (videoUrl) {
-      video.src = videoUrl;
-      video.play().catch(() => showManualPlay(video));
-      document.getElementById('ad-placeholder').style.display = 'none';
-    } else {
-      showFallbackAd();
-    }
-  }
-
-  function showManualPlay(video) {
-    const ph = document.getElementById('ad-placeholder');
-    ph.style.display = 'flex';
-    ph.innerHTML = `
-      <div style="font-size:3rem;cursor:pointer;" onclick="this.parentElement.style.display='none'; arguments[0].target.closest('#vast-container').querySelector('video').play();">▶</div>
-      <div style="font-size:0.75rem;color:var(--muted)">Tap to play ad</div>
-    `;
-    // Re-attach click to play
-    ph.querySelector('div').addEventListener('click', () => {
-      video.play();
-      ph.style.display = 'none';
-    });
-  }
-
-  function showFallbackAd() {
-    // Fallback: show a stylized placeholder that still counts down
-    const ph = document.getElementById('ad-placeholder');
-    ph.style.display = 'flex';
-    ph.innerHTML = `
-      <div style="font-size:2.5rem;">📺</div>
-      <div style="font-size:0.8rem;color:var(--muted);text-align:center;max-width:220px;line-height:1.6">
-        Ad is playing in background.<br>Please wait for the countdown.
-      </div>
-    `;
-  }
-
   function skipAd() {
-    const btn = document.getElementById('skip-btn');
-    if (!btn.classList.contains('ready')) return;
+    if (!skipBtn.classList.contains('ready')) return;
     clearInterval(timerInterval);
     earnCoin();
   }
 
-  function earnCoin() {
-    // Close overlay
+  function closeOverlay() {
+    video.pause();
+    video.src = '';
     document.getElementById('ad-overlay').classList.remove('visible');
-    document.getElementById('vast-container').innerHTML = '';
+    document.getElementById('earn-btn').disabled = false;
+  }
 
-    // Add coin
-    coins += 1;
-    adsWatched += 1;
+  function earnCoin() {
+    closeOverlay();
 
-    // Update UI
-    const balNum = document.getElementById('balance-num');
-    balNum.textContent = coins;
+    coins++;
+    adsWatched++;
+
+    document.getElementById('balance-num').textContent = coins;
+    document.getElementById('ads-watched').textContent = adsWatched;
+    document.getElementById('coins-today').textContent = coins;
 
     const icon = document.getElementById('coin-icon');
     icon.classList.remove('bounce');
     void icon.offsetWidth;
     icon.classList.add('bounce');
 
-    document.getElementById('ads-watched').textContent = adsWatched;
-    document.getElementById('coins-today').textContent = coins;
-
-    // Toast
     const toast = document.getElementById('reward-toast');
     toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2500);
+    setTimeout(() => toast.classList.remove('show'), 2800);
 
-    // History
     addHistory();
   }
 
   function addHistory() {
-    const list = document.getElementById('history-list');
-    const title = document.getElementById('hist-title');
-    title.style.display = 'block';
-
+    document.getElementById('hist-title').style.display = 'block';
     const now = new Date();
     const time = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-
     const item = document.createElement('div');
     item.className = 'history-item';
-    item.innerHTML = `
-      <div class="h-label">📺 Video Ad #${adsWatched} &nbsp;·&nbsp; ${time}</div>
-      <div class="h-amount">+1 🪙</div>
-    `;
-    list.insertBefore(item, list.firstChild);
+    item.innerHTML = `<div class="h-label">📺 Video Ad #${adsWatched} · ${time}</div><div class="h-amount">+1 🪙</div>`;
+    document.getElementById('history-list').insertBefore(item, document.getElementById('history-list').firstChild);
   }
-
-  // Close overlay on background click
-  document.getElementById('ad-overlay').addEventListener('click', function(e) {
-    if (e.target === this) {
-      // Don't allow closing by clicking outside
-    }
-  });
 </script>
 </body>
 </html>
