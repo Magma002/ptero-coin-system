@@ -16,6 +16,10 @@
   ],
   "rewrites": [
     {
+      "source": "/api/vast",
+      "destination": "/api/vast"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
