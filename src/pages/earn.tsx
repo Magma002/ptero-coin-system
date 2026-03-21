@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { useClaimReward } from "@/hooks/use-rewards";
-import { useExoClick } from "@/hooks/use-exoclick";;
+import { useExoClick } from "@/hooks/use-exoclick";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, Loader2, CheckCircle2 } from "lucide-react";
@@ -149,9 +149,9 @@ export default function Earn() {
                 <p className="text-muted-foreground mb-10 max-w-md text-lg">
                   Watch a 30-second ExoClick video advertisement to earn exactly 1 coin. You must watch the full ad to receive your reward.
                 </p>
-                <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg max-w-md">
-                  <p className="text-green-400 text-sm">
-                    ✅ ExoClick verification added. Waiting for account approval.
+                <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg max-w-md">
+                  <p className="text-blue-400 text-sm">
+                    🎬 Real ExoClick ads now active! Zone ID: 5877266
                   </p>
                 </div>
                 <button onClick={handleWatchAd} className="px-12 py-5 rounded-full bg-white text-black font-bold text-xl hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:shadow-[0_0_50px_rgba(255,255,255,0.5)]">
