@@ -1,5 +1,24 @@
 import { useCallback, useRef } from 'react';
 
+/*
+ * MONETAG SETUP INSTRUCTIONS:
+ * 
+ * 1. Go to your Monetag dashboard (https://monetag.com)
+ * 2. Navigate to "Telegram Mini Apps" section
+ * 3. Create a new app or select existing one
+ * 4. Click "Get SDK" button
+ * 5. Copy the script src URL from the generated code
+ * 6. Replace the SDK_URL below with your actual SDK URL
+ * 7. Make sure your zone (221737) is configured for "Rewarded Interstitial" format
+ * 8. Rewarded Interstitial = 30-second video ads that give rewards
+ * 
+ * If you're getting notification/popup ads instead of video ads,
+ * your zone might be configured for the wrong ad format.
+ */
+
+// REPLACE THIS WITH YOUR ACTUAL MONETAG SDK URL FROM THE DASHBOARD
+const SDK_URL = 'https://tg.monetag.com/sdk.js'; // Update this URL!
+
 declare global {
   interface Window {
     [key: string]: any;
@@ -32,7 +51,8 @@ export function useMonetag() {
       }
 
       const script = document.createElement('script');
-      script.src = 'https://quge5.com/88/tag.min.js';
+      // IMPORTANT: Update SDK_URL constant at the top of this file
+      script.src = SDK_URL;
       script.setAttribute('data-zone', zoneId);
       script.setAttribute('data-sdk', showFunctionName);
       script.async = true;
@@ -46,7 +66,13 @@ export function useMonetag() {
       
       script.onerror = () => {
         console.error('Failed to load Monetag SDK');
-        reject(new Error('Failed to load Monetag SDK'));
+        console.error('IMPORTANT: You need to update the SDK URL in src/hooks/use-monetag.ts');
+        console.error('1. Go to your Monetag dashboard');
+        console.error('2. Navigate to Telegram Mini Apps section');
+        console.error('3. Click "Get SDK" button');
+        console.error('4. Copy the script src URL and replace it in the code');
+        console.error('5. Make sure your zone is configured for "Rewarded Interstitial" (30-second video ads)');
+        reject(new Error('Failed to load Monetag SDK - Check console for setup instructions'));
       };
 
       document.head.appendChild(script);
@@ -98,6 +124,8 @@ export function useMonetag() {
         
         attempts++;
         console.log(`Waiting for Monetag SDK initialization: ${attempts}/${maxAttempts}`);
+        console.log(`Looking for function: ${showFunctionName}`);
+        console.log('Available window functions:', Object.keys(window).filter(key => key.startsWith('show_')));
       }
       
       console.warn('Monetag SDK not properly initialized after all attempts');
