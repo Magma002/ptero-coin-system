@@ -4,21 +4,54 @@ import { useClaimReward } from "@/hooks/use-rewards";
 import { useExoClick } from "@/hooks/use-exoclick";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Loader2, CheckCircle2 } from "lucide-react";
+import { Play, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
 import confetti from "canvas-confetti";
 
-type AdStatus = 'idle' | 'loading' | 'watching' | 'rewarding' | 'cooldown';
+type AdStatus = 'idle' | 'loading' | 'watching' | 'rewarding' | 'cooldown' | 'error';
 
 export default function Earn() {
   const [status, setStatus] = useState<AdStatus>('idle');
   const [timeLeft, setTimeLeft] = useState(0);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [debugLogs, setDebugLogs] = useState<string[]>([]);
   const claimMutation = useClaimReward();
   const { showAd, closeAd, cleanup } = useExoClick();
   const { toast } = useToast();
 
+  // Capture console logs for debugging
+  useEffect(() => {
+    const originalLog = console.log;
+    const originalError = console.error;
+    
+    console.log = (...args) => {
+      const message = args.join(' ');
+      if (message.includes('ExoClick') || message.includes('🎬') || message.includes('❌') || message.includes('✅')) {
+        setDebugLogs(prev => [...prev.slice(-10), `LOG: ${message}`]);
+      }
+      originalLog(...args);
+    };
+    
+    console.error = (...args) => {
+      const message = args.join(' ');
+      if (message.includes('ExoClick') || message.includes('ad') || message.includes('script')) {
+        setDebugLogs(prev => [...prev.slice(-10), `ERROR: ${message}`]);
+        setErrorMessage(message);
+      }
+      originalError(...args);
+    };
+    
+    return () => {
+      console.log = originalLog;
+      console.error = originalError;
+    };
+  }, []);
+
   const handleWatchAd = async () => {
     console.log('🎬 User clicked "Watch Ad" button');
     setStatus('loading');
+    setErrorMessage('');
+    setDebugLogs([]);
+    
     try {
       console.log('🔄 Attempting to show ExoClick ad...');
       const adShown = await showAd();
@@ -34,12 +67,13 @@ export default function Earn() {
       }
     } catch (error) {
       console.error('💥 Error in handleWatchAd:', error);
+      setStatus('error');
+      setErrorMessage(error instanceof Error ? error.message : 'Unknown error occurred');
       toast({
         title: "Ad Loading Failed",
-        description: "Please check the browser console for details and try again.",
+        description: "Check the error details below and try again.",
         variant: "destructive",
       });
-      setStatus('idle');
     }
   };
 
@@ -160,6 +194,27 @@ export default function Earn() {
                     🎬 Real ExoClick ads now active! Zone ID: 5877266
                   </p>
                 </div>
+                <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg max-w-md">
+                  <p className="text-yellow-400 text-sm">
+                    🔧 Debug Mode: Check browser console (F12) for detailed logs
+                  </p>
+                </div>
+                <button 
+                  onClick={async () => {
+                    console.log('🧪 Testing ExoClick script connectivity...');
+                    try {
+                      const response = await fetch('https://a.magsrv.com/ad-provider.js', { method: 'HEAD' });
+                      console.log('✅ ExoClick script is reachable:', response.status);
+                      toast({ title: "Connectivity Test", description: `ExoClick script reachable (${response.status})`, className: "bg-green-500/20 border-green-500 text-white" });
+                    } catch (error) {
+                      console.error('❌ ExoClick script not reachable:', error);
+                      toast({ title: "Connectivity Test", description: "ExoClick script not reachable", variant: "destructive" });
+                    }
+                  }}
+                  className="mb-4 px-6 py-2 rounded-full bg-yellow-500/20 text-yellow-400 font-semibold hover:bg-yellow-500/30 transition-all border border-yellow-500/30 text-sm"
+                >
+                  🧪 Test ExoClick Connectivity
+                </button>
                 <button onClick={handleWatchAd} className="px-12 py-5 rounded-full bg-white text-black font-bold text-xl hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:shadow-[0_0_50px_rgba(255,255,255,0.5)]">
                   Watch 30s ExoClick Ad & Earn 1 Coin
                 </button>
@@ -190,6 +245,28 @@ export default function Earn() {
               <motion.div key="rewarding" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center text-primary">
                 <Loader2 className="w-20 h-20 animate-spin mb-6 drop-shadow-[0_0_15px_rgba(139,92,246,0.8)]" />
                 <h3 className="text-2xl font-bold">Claiming Your 1 Coin...</h3>
+              </motion.div>
+            )}
+            {status === 'error' && (
+              <motion.div key="error" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="flex flex-col items-center">
+                <div className="w-24 h-24 rounded-full bg-red-500/20 border border-red-500/50 flex items-center justify-center mb-8 text-red-400">
+                  <AlertTriangle className="w-10 h-10" />
+                </div>
+                <h2 className="text-3xl font-display font-bold mb-4 text-red-400">Ad Loading Error</h2>
+                <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6 max-w-md">
+                  <p className="text-red-400 text-sm font-mono">{errorMessage}</p>
+                </div>
+                {debugLogs.length > 0 && (
+                  <div className="bg-black/50 border border-gray-500/20 rounded-lg p-4 mb-6 max-w-lg max-h-40 overflow-y-auto">
+                    <h4 className="text-white font-bold mb-2">Debug Logs:</h4>
+                    {debugLogs.map((log, index) => (
+                      <div key={index} className="text-xs font-mono text-gray-300 mb-1">{log}</div>
+                    ))}
+                  </div>
+                )}
+                <button onClick={() => setStatus('idle')} className="px-8 py-3 rounded-full bg-red-500/20 text-red-400 font-semibold hover:bg-red-500/30 transition-all border border-red-500/30">
+                  Try Again
+                </button>
               </motion.div>
             )}
             {status === 'cooldown' && (
