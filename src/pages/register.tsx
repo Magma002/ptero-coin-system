@@ -6,9 +6,12 @@ import { Coins, Mail, Lock, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Register() {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const registerMutation = useRegister();
   const { toast } = useToast();
 
@@ -22,7 +25,13 @@ export default function Register() {
       return;
     }
 
-    registerMutation.mutate({ email, password }, {
+    registerMutation.mutate({ 
+      username, 
+      email, 
+      password, 
+      firstName: firstName || username,
+      lastName: lastName || 'User'
+    }, {
       onError: (err: any) => {
         toast({
           title: "Registration failed",
@@ -57,10 +66,25 @@ export default function Register() {
             <Coins className="w-10 h-10 text-white animate-float" />
           </div>
           <h1 className="text-3xl font-display font-bold text-foreground">Create Account</h1>
-          <p className="text-muted-foreground mt-2">Join today and start earning</p>
+          <p className="text-muted-foreground mt-2">Register with Pterodactyl panel integration</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-foreground ml-1">Username</label>
+            <div className="relative">
+              <UserPlus className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <input 
+                type="text" 
+                required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                placeholder="your-username"
+              />
+            </div>
+          </div>
+
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground ml-1">Email Address</label>
             <div className="relative">
@@ -72,6 +96,29 @@ export default function Register() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                 placeholder="you@example.com"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground ml-1">First Name</label>
+              <input 
+                type="text" 
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                placeholder="John"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground ml-1">Last Name</label>
+              <input 
+                type="text" 
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                placeholder="Doe"
               />
             </div>
           </div>

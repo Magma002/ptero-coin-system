@@ -6,21 +6,18 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getToken() {
-  let token = localStorage.getItem("coinreward_token");
-  // For development, set a default mock token if none exists
-  if (!token) {
-    token = "mock-jwt-token-for-development";
-    localStorage.setItem("coinreward_token", token);
-  }
-  return token;
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem("auth_token");
 }
 
 export function setToken(token: string) {
-  localStorage.setItem("coinreward_token", token);
+  if (typeof window === 'undefined') return;
+  localStorage.setItem("auth_token", token);
 }
 
 export function removeToken() {
-  localStorage.removeItem("coinreward_token");
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem("auth_token");
 }
 
 export function authHeaders() {

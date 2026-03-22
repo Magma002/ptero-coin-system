@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { authHeaders } from "@/lib/utils";
+import { authHeaders } from "@/hooks/use-auth";
 import type { RewardResponse, CooldownResponse, HistoryResponse } from "@/types/api";
 
 // Mock history data for development

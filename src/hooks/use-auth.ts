@@ -1,44 +1,85 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { setToken, removeToken, authHeaders } from "@/lib/utils";
-import type { LoginRequest, RegisterRequest, AuthResponse } from "@/types/api";
 
-// Mock auth response for development
-const mockAuthResponse: AuthResponse = {
-  token: "mock-jwt-token-for-development",
-  user: {
-    id: "1",
-    email: "demo@coinreward.com",
-    name: "Demo User",
-    balance: 1250,
-    totalEarned: 5680
-  }
+// Auth token management
+const getAuthToken = () => {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem('auth_token');
 };
 
+const setAuthToken = (token: string) => {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem('auth_token', token);
+};
+
+const removeAuthToken = () => {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem('auth_token');
+};
+
+export const authHeaders = () => {
+  const token = getAuthToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+// Register hook
+export function useRegister() {
+  return useMutation({
+    mutationFn: async (userData: {
+      username: string;
+      email: string;
+      password: string;
+      firstName?: string;
+      lastName?: string;
+    }) => {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+      
+      const json = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(json.error || 'Registration failed');
+      }
+      
+      return json;
+    },
+  });
+}
+
+// Login hook
 export function useLogin() {
   const queryClient = useQueryClient();
-
+  
   return useMutation({
-    mutationFn: async (data: LoginRequest) => {
-      try {
-        const res = await fetch("/api/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-        
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.message || "Failed to login");
-        
-        return json as AuthResponse;
-      } catch (error) {
-        // For development, accept any email/password and return mock data
-        console.log("Using mock authentication for development");
-        return mockAuthResponse;
+    mutationFn: async (credentials: {
+      username: string;
+      password: string;
+    }) => {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
+      });
+      
+      const json = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(json.error || 'Login failed');
       }
+      
+      // Store token
+      setAuthToken(json.token);
+      
+      return json;
     },
-    onSuccess: (data) => {
-      setToken(data.token);
-      queryClient.setQueryData(["/api/user"], { user: data.user });
+    onSuccess: () => {
+      // Invalidate user queries to refetch data
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       // Redirect to dashboard
       window.location.href = "/";
@@ -46,51 +87,18 @@ export function useLogin() {
   });
 }
 
-export function useRegister() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (data: RegisterRequest) => {
-      try {
-        const res = await fetch("/api/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-        
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.message || "Failed to register");
-        
-        return json as AuthResponse;
-      } catch (error) {
-        // For development, accept any registration and return mock data
-        console.log("Using mock registration for development");
-        return {
-          ...mockAuthResponse,
-          user: {
-            ...mockAuthResponse.user,
-            email: data.email,
-            name: data.name
-          }
-        };
-      }
-    },
-    onSuccess: (data) => {
-      setToken(data.token);
-      queryClient.setQueryData(["/api/user"], { user: data.user });
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      // Redirect to dashboard
-      window.location.href = "/";
-    },
-  });
-}
-
+// Logout hook
 export function useLogout() {
   const queryClient = useQueryClient();
   
   return () => {
-    removeToken();
+    removeAuthToken();
     queryClient.clear();
     window.location.href = "/login";
   };
+}
+
+// Check if user is authenticated
+export function useIsAuthenticated() {
+  return !!getAuthToken();
 }

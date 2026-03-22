@@ -6,14 +6,14 @@ import { Coins, Mail, Lock, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const loginMutation = useLogin();
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    loginMutation.mutate({ email, password }, {
+    loginMutation.mutate({ username, password }, {
       onError: (err: any) => {
         toast({
           title: "Login failed",
@@ -49,27 +49,27 @@ export default function Login() {
             <Coins className="w-10 h-10 text-white animate-float" />
           </div>
           <h1 className="text-3xl font-display font-bold text-foreground">Welcome Back</h1>
-          <p className="text-muted-foreground mt-2">Sign in to claim your rewards</p>
+          <p className="text-muted-foreground mt-2">Sign in with your Pterodactyl panel credentials</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground ml-1">Email Address</label>
+            <label className="text-sm font-medium text-foreground ml-1">Username or Email</label>
             <div className="relative">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <input 
-                type="email" 
+                type="text" 
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                placeholder="you@example.com"
+                placeholder="your-username or you@example.com"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground ml-1">Password</label>
+            <label className="text-sm font-medium text-foreground ml-1">Pterodactyl Password</label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <input 
@@ -78,7 +78,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                placeholder="••••••••"
+                placeholder="Your panel password"
               />
             </div>
           </div>
