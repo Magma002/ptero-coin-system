@@ -191,7 +191,7 @@ export default function Earn() {
                 </p>
                 <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg max-w-md">
                   <p className="text-blue-400 text-sm">
-                    🎬 Multi-Network Ads: ExoClick + Adsterra Backup
+                    🎬 Monetag Banner Ads Active! Zone: 221737
                   </p>
                 </div>
                 <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg max-w-md">
@@ -201,22 +201,22 @@ export default function Earn() {
                 </div>
                 <button 
                   onClick={async () => {
-                    console.log('🧪 Testing ExoClick banner connectivity...');
+                    console.log('🧪 Testing Monetag connectivity...');
                     try {
-                      const response = await fetch('https://a.magsrv.com/ad-provider.js', { method: 'HEAD' });
-                      console.log('✅ ExoClick script reachable:', response.status);
-                      toast({ title: "Banner Test", description: `ExoClick script reachable (${response.status})`, className: "bg-green-500/20 border-green-500 text-white" });
+                      const response = await fetch('https://quge5.com/88/tag.min.js', { method: 'HEAD' });
+                      console.log('✅ Monetag script reachable:', response.status);
+                      toast({ title: "Monetag Test", description: `Monetag script reachable (${response.status})`, className: "bg-green-500/20 border-green-500 text-white" });
                     } catch (error) {
-                      console.error('❌ ExoClick script not reachable:', error);
-                      toast({ title: "Banner Test", description: "ExoClick script not reachable", variant: "destructive" });
+                      console.error('❌ Monetag script not reachable:', error);
+                      toast({ title: "Monetag Test", description: "Monetag script not reachable", variant: "destructive" });
                     }
                   }}
                   className="mb-4 px-6 py-2 rounded-full bg-yellow-500/20 text-yellow-400 font-semibold hover:bg-yellow-500/30 transition-all border border-yellow-500/30 text-sm"
                 >
-                  🧪 Test ExoClick Banner
+                  🧪 Test Monetag
                 </button>
                 <button onClick={handleWatchAd} className="px-12 py-5 rounded-full bg-white text-black font-bold text-xl hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:shadow-[0_0_50px_rgba(255,255,255,0.5)]">
-                  Watch Advertisement & Earn 1 Coin
+                  Watch Monetag Banner & Earn 1 Coin
                 </button>
               </motion.div>
             )}
@@ -236,7 +236,7 @@ export default function Earn() {
                   </svg>
                   <span className="text-5xl font-display font-bold neon-text">{timeLeft}</span>
                 </div>
-                <h3 className="text-2xl font-semibold mb-2">ExoClick Advertisement Playing...</h3>
+                <h3 className="text-2xl font-semibold mb-2">Monetag Banner Advertisement Playing...</h3>
                 <p className="text-muted-foreground">Stay on this page for the full 30 seconds to earn 1 coin</p>
                 {timeLeft <= 10 && <p className="text-yellow-400 mt-2 text-sm">Almost done! Keep watching...</p>}
               </motion.div>
