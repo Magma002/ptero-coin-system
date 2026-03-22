@@ -1,44 +1,32 @@
-import fs from 'fs';
-import path from 'path';
 import jwt from 'jsonwebtoken';
 
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-key';
 
-// Database file paths
-const COINS_DB_PATH = path.join(process.cwd(), 'data', 'coins.json');
-
 // Cooldown time in milliseconds (2 minutes)
 const REWARD_COOLDOWN = 2 * 60 * 1000;
 
-// Read JSON database
-const readDB = (filePath) => {
-  try {
-    if (!fs.existsSync(filePath)) {
-      return {};
-    }
-    const data = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error('Error reading database:', error);
-    return {};
-  }
-};
+// In-memory storage (shared with other endpoints)
+let coins = {};
 
-// Write JSON database
-const writeDB = (filePath, data) => {
-  try {
-    const dataDir = path.dirname(filePath);
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true });
-    }
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-    return true;
-  } catch (error) {
-    console.error('Error writing database:', error);
-    return false;
-  }
-};
+// Initialize with demo data
+if (Object.keys(coins).length === 0) {
+  coins['demo'] = {
+    balance: 0,
+    totalEarned: 0,
+    totalSpent: 0,
+    lastReward: null,
+    transactions: [],
+  };
+  
+  coins['testuser'] = {
+    balance: 0,
+    totalEarned: 0,
+    totalSpent: 0,
+    lastReward: null,
+    transactions: [],
+  };
+}
 
 // Verify JWT token
 const verifyToken = (token) => {
@@ -72,7 +60,6 @@ export default async function handler(req, res) {
     const now = Date.now();
 
     // Get user coins data
-    const coins = readDB(COINS_DB_PATH);
     let userCoins = coins[username];
 
     // Initialize user coins if not exists
@@ -84,6 +71,7 @@ export default async function handler(req, res) {
         lastReward: null,
         transactions: [],
       };
+      coins[username] = userCoins;
     }
 
     // Check cooldown
@@ -105,7 +93,7 @@ export default async function handler(req, res) {
       id: Date.now().toString(),
       type: 'earn',
       amount: rewardAmount,
-      description: 'Watched Monetag advertisement',
+      description: 'Watched advertisement',
       timestamp: new Date().toISOString(),
     };
 
@@ -120,11 +108,8 @@ export default async function handler(req, res) {
       userCoins.transactions = userCoins.transactions.slice(0, 50);
     }
 
-    // Save to database
+    // Save to in-memory storage
     coins[username] = userCoins;
-    if (!writeDB(COINS_DB_PATH, coins)) {
-      return res.status(500).json({ error: 'Failed to save reward' });
-    }
 
     console.log(`✅ User ${username} earned ${rewardAmount} coin(s). New balance: ${userCoins.balance}`);
 

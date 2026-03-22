@@ -1,27 +1,52 @@
-import fs from 'fs';
-import path from 'path';
 import jwt from 'jsonwebtoken';
 
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-key';
 
-// Database file paths
-const USERS_DB_PATH = path.join(process.cwd(), 'data', 'users.json');
-const COINS_DB_PATH = path.join(process.cwd(), 'data', 'coins.json');
+// In-memory storage (shared with login.js)
+let users = {};
+let coins = {};
 
-// Read JSON database
-const readDB = (filePath) => {
-  try {
-    if (!fs.existsSync(filePath)) {
-      return {};
-    }
-    const data = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error('Error reading database:', error);
-    return {};
-  }
-};
+// Initialize with demo data
+if (Object.keys(users).length === 0) {
+  users['demo'] = {
+    username: 'demo',
+    email: 'demo@example.com',
+    firstName: 'Demo',
+    lastName: 'User',
+    pterodactylId: null,
+    pterodactylUuid: null,
+    createdAt: new Date().toISOString(),
+    lastLogin: null,
+  };
+  
+  users['testuser'] = {
+    username: 'testuser',
+    email: 'test@example.com',
+    firstName: 'Test',
+    lastName: 'User',
+    pterodactylId: null,
+    pterodactylUuid: null,
+    createdAt: new Date().toISOString(),
+    lastLogin: null,
+  };
+  
+  coins['demo'] = {
+    balance: 0,
+    totalEarned: 0,
+    totalSpent: 0,
+    lastReward: null,
+    transactions: [],
+  };
+  
+  coins['testuser'] = {
+    balance: 0,
+    totalEarned: 0,
+    totalSpent: 0,
+    lastReward: null,
+    transactions: [],
+  };
+}
 
 // Verify JWT token
 const verifyToken = (token) => {
@@ -52,7 +77,6 @@ export default async function handler(req, res) {
     }
 
     // Get user data
-    const users = readDB(USERS_DB_PATH);
     const user = users[decoded.username];
 
     if (!user) {
@@ -60,7 +84,6 @@ export default async function handler(req, res) {
     }
 
     // Get user coins
-    const coins = readDB(COINS_DB_PATH);
     const userCoins = coins[decoded.username] || {
       balance: 0,
       totalEarned: 0,
@@ -80,6 +103,8 @@ export default async function handler(req, res) {
         pterodactylUuid: user.pterodactylUuid,
         lastLogin: user.lastLogin,
         createdAt: user.createdAt,
+        balance: userCoins.balance,
+        coins: userCoins.balance, // For compatibility
       },
       coins: {
         balance: userCoins.balance,

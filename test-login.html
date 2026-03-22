@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Authentication Test</h1>
+    
+    <div>
+        <h3>Step 1: Test Login</h3>
+        <button onclick="testLogin()">Login as testuser</button>
+        <div id="login-result"></div>
+    </div>
+    
+    <div>
+        <h3>Step 2: Check Current Auth Status</h3>
+        <button onclick="checkAuth()">Check Auth Status</button>
+        <div id="auth-result"></div>
+    </div>
+    
+    <div>
+        <h3>Step 3: Test API Calls</h3>
+        <button onclick="testUserAPI()">Test /api/user</button>
+        <button onclick="testHistoryAPI()">Test /api/history</button>
+        <div id="api-result"></div>
+    </div>
+    
+    <div>
+        <h3>Step 4: Clear Auth</h3>
+        <button onclick="clearAuth()">Clear Auth Token</button>
+    </div>
+
+    <script>
+        async function testLogin() {
+            const resultDiv = document.getElementById('login-result');
+            resultDiv.innerHTML = 'Testing login...';
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'testuser',
+                        password: 'password123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('auth_token', data.token);
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <strong>Login Successful!</strong><br>
+                            Token stored in localStorage<br>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <strong>Login Failed:</strong> ${data.error}<br>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <strong>Network Error:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        function checkAuth() {
+            const resultDiv = document.getElementById('auth-result');
+            const token = localStorage.getItem('auth_token');
+            
+            resultDiv.innerHTML = `
+                <div class="result ${token ? 'success' : 'error'}">
+                    <strong>Auth Token:</strong> ${token ? 'Present' : 'Missing'}<br>
+                    ${token ? `<strong>Token Preview:</strong> ${token.substring(0, 50)}...<br>` : ''}
+                    <strong>Token Length:</strong> ${token?.length || 0}<br>
+                    <strong>All LocalStorage Keys:</strong> ${Object.keys(localStorage).join(', ')}
+                </div>
+            `;
+        }
+        
+        async function testUserAPI() {
+            const resultDiv = document.getElementById('api-result');
+            const token = localStorage.getItem('auth_token');
+            
+            if (!token) {
+                resultDiv.innerHTML = '<div class="result error">No auth token found. Please login first.</div>';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/user', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <div class="result ${response.ok ? 'success' : 'error'}">
+                        <strong>/api/user Status:</strong> ${response.status}<br>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <strong>/api/user Error:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        async function testHistoryAPI() {
+            const resultDiv = document.getElementById('api-result');
+            const token = localStorage.getItem('auth_token');
+            
+            if (!token) {
+                resultDiv.innerHTML = '<div class="result error">No auth token found. Please login first.</div>';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/history', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <div class="result ${response.ok ? 'success' : 'error'}">
+                        <strong>/api/history Status:</strong> ${response.status}<br>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <strong>/api/history Error:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        function clearAuth() {
+            localStorage.removeItem('auth_token');
+            alert('Auth token cleared!');
+        }
+        
+        // Auto-check auth status on page load
+        window.onload = function() {
+            checkAuth();
+        };
+    </script>
+</body>
+</html>

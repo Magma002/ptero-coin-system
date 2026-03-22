@@ -2,7 +2,6 @@ import { AppLayout } from "@/components/AppLayout";
 import { useUser } from "@/hooks/use-user";
 import { useHistory } from "@/hooks/use-rewards";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
-import { AuthDebug } from "@/components/AuthDebug";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { Coins, TrendingUp, PlaySquare, ArrowRight, Clock, Star } from "lucide-react";
@@ -24,8 +23,6 @@ export default function Dashboard() {
 
   return (
     <AppLayout>
-      <AuthDebug />
-      
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         
         {/* Total Coins Widget */}

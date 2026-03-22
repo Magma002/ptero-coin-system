@@ -1,26 +1,29 @@
-import fs from 'fs';
-import path from 'path';
 import jwt from 'jsonwebtoken';
 
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-key';
 
-// Database file paths
-const COINS_DB_PATH = path.join(process.cwd(), 'data', 'coins.json');
+// In-memory storage (shared with other endpoints)
+let coins = {};
 
-// Read JSON database
-const readDB = (filePath) => {
-  try {
-    if (!fs.existsSync(filePath)) {
-      return {};
-    }
-    const data = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error('Error reading database:', error);
-    return {};
-  }
-};
+// Initialize with demo data
+if (Object.keys(coins).length === 0) {
+  coins['demo'] = {
+    balance: 0,
+    totalEarned: 0,
+    totalSpent: 0,
+    lastReward: null,
+    transactions: [],
+  };
+  
+  coins['testuser'] = {
+    balance: 0,
+    totalEarned: 0,
+    totalSpent: 0,
+    lastReward: null,
+    transactions: [],
+  };
+}
 
 // Verify JWT token
 const verifyToken = (token) => {
@@ -53,7 +56,6 @@ export default async function handler(req, res) {
     const username = decoded.username;
 
     // Get user coins data
-    const coins = readDB(COINS_DB_PATH);
     const userCoins = coins[username];
 
     if (!userCoins) {
