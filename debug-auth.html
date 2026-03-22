@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Debug</title>
+</head>
+<body>
+    <h1>Authentication Debug</h1>
+    <div id="debug-info"></div>
+    
+    <script>
+        const token = localStorage.getItem('auth_token');
+        const debugInfo = document.getElementById('debug-info');
+        
+        debugInfo.innerHTML = `
+            <p><strong>Has Token:</strong> ${!!token}</p>
+            <p><strong>Token Length:</strong> ${token?.length || 0}</p>
+            <p><strong>Token Preview:</strong> ${token ? token.substring(0, 50) + '...' : 'No token'}</p>
+            <p><strong>All LocalStorage Keys:</strong> ${Object.keys(localStorage).join(', ')}</p>
+        `;
+        
+        // Test API call
+        if (token) {
+            fetch('/api/user', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                debugInfo.innerHTML += `<p><strong>API Test Status:</strong> ${response.status}</p>`;
+                return response.json();
+            })
+            .then(data => {
+                debugInfo.innerHTML += `<p><strong>API Response:</strong> ${JSON.stringify(data, null, 2)}</p>`;
+            })
+            .catch(error => {
+                debugInfo.innerHTML += `<p><strong>API Error:</strong> ${error.message}</p>`;
+            });
+        }
+    </script>
+</body>
+</html>

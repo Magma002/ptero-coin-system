@@ -1,1 +1,9 @@
-{}
+{
+  "testuser": {
+    "balance": 0,
+    "totalEarned": 0,
+    "totalSpent": 0,
+    "lastReward": null,
+    "transactions": []
+  }
+}

@@ -10,6 +10,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "vercel-build": "vite build --config vite.config.ts",
     "init-data": "node scripts/init-data.js",
+    "create-test-user": "node scripts/create-test-user.js",
     "test-pterodactyl": "node scripts/test-pterodactyl.js",
     "reset-coins": "curl -X POST http://localhost:3000/api/admin/reset-coins -H \"Content-Type: application/json\" -d '{\"adminKey\": \"admin-reset-key-123\"}'"
   },
