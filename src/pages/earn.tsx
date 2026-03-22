@@ -191,7 +191,7 @@ export default function Earn() {
                 </p>
                 <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg max-w-md">
                   <p className="text-blue-400 text-sm">
-                    🎬 ExoClick Banner Ads Active! Zone ID: 5877264
+                    🎬 Multi-Network Ads: ExoClick + Adsterra Backup
                   </p>
                 </div>
                 <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg max-w-md">
@@ -216,7 +216,7 @@ export default function Earn() {
                   🧪 Test ExoClick Banner
                 </button>
                 <button onClick={handleWatchAd} className="px-12 py-5 rounded-full bg-white text-black font-bold text-xl hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:shadow-[0_0_50px_rgba(255,255,255,0.5)]">
-                  Watch ExoClick Banner Ad & Earn 1 Coin
+                  Watch Advertisement & Earn 1 Coin
                 </button>
               </motion.div>
             )}

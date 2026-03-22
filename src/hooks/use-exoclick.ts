@@ -1,19 +1,21 @@
 import { useCallback, useRef } from 'react';
 
 /*
- * EXOCLICK BANNER AD INTEGRATION
+ * MULTI-NETWORK AD INTEGRATION
  * 
- * Using the working banner zone:
- * - Script: https://a.magsrv.com/ad-provider.js
- * - Zone ID: 5877264
- * - Class: eas6a97888e2
- * - Type: Banner (728x90)
+ * Priority order:
+ * 1. ExoClick Banner (Zone 5877264) - Primary
+ * 2. Adsterra Ads - Backup
+ * 3. 30-second timer - Final fallback
  */
 
 // ExoClick banner configuration
 const EXOCLICK_SCRIPT_URL = 'https://a.magsrv.com/ad-provider.js';
 const EXOCLICK_ZONE_ID = '5877264';
 const EXOCLICK_CLASS = 'eas6a97888e2';
+
+// Adsterra configuration (from your setup docs)
+const ADSTERRA_SCRIPT_URL = 'https://pl28953973.profitablecpmratenetwork.com/0e/59/06/0e5906127d5055100faa98776658bf50.js';
 
 declare global {
   interface Window {
@@ -73,32 +75,46 @@ export function useExoClick() {
 
   const showAd = useCallback(async (): Promise<boolean> => {
     try {
-      console.log('🎬 Starting ExoClick banner ad...');
-      console.log('🎯 Zone ID:', EXOCLICK_ZONE_ID);
-      console.log('🏷️ Ad Class:', EXOCLICK_CLASS);
+      console.log('🎬 Starting multi-network ad system...');
+      
+      // Try ExoClick first
+      console.log('🎯 Trying ExoClick banner zone 5877264...');
+      const exoClickWorked = await tryExoClickAd();
+      
+      if (exoClickWorked) {
+        console.log('✅ ExoClick ad loaded successfully');
+        return true;
+      }
+      
+      // Try Adsterra as backup
+      console.log('🔄 ExoClick empty, trying Adsterra backup...');
+      const adsterraWorked = await tryAdsterraAd();
+      
+      if (adsterraWorked) {
+        console.log('✅ Adsterra ad loaded successfully');
+        return true;
+      }
+      
+      // Final fallback - 30 second timer
+      console.log('🔄 All ad networks empty, using 30-second timer fallback');
+      showFallbackTimer();
+      return true;
 
-      // Load the ExoClick script first
+    } catch (error) {
+      console.error('💥 Error in multi-network ad system:', error);
+      showFallbackTimer();
+      return true;
+    }
+  }, []);
+
+  const tryExoClickAd = async (): Promise<boolean> => {
+    try {
       await loadScript();
-      console.log('✅ ExoClick script loaded successfully');
-
-      // Create full-screen ad container
-      const adContainer = document.createElement('div');
-      adContainer.id = 'exoclick-banner-overlay';
-      adContainer.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.95);
-        z-index: 10000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-      `;
-
-      // Create the ExoClick banner ad element
+      
+      // Create ad container
+      const adContainer = createAdContainer('ExoClick Banner Advertisement', '#e74c3c');
+      
+      // Create ExoClick banner element
       const adElement = document.createElement('ins');
       adElement.className = EXOCLICK_CLASS;
       adElement.setAttribute('data-zoneid', EXOCLICK_ZONE_ID);
@@ -112,129 +128,179 @@ export function useExoClick() {
         border-radius: 8px;
       `;
 
-      // Create UI wrapper
-      const wrapper = document.createElement('div');
-      wrapper.style.cssText = `
-        color: white;
-        text-align: center;
-        font-family: Arial, sans-serif;
-        padding: 40px;
-        max-width: 800px;
-      `;
-
-      wrapper.innerHTML = `
-        <div style="font-size: 24px; margin-bottom: 20px; color: #e74c3c;">
-          🎬 ExoClick Banner Advertisement
-        </div>
-        <div style="font-size: 18px; margin-bottom: 30px;">
-          Please interact with the banner ad below if interested
-        </div>
-        <div id="banner-container" style="margin: 20px 0; padding: 20px; background: #2a2a2a; border-radius: 8px;">
-          <div style="color: #e74c3c; margin-bottom: 15px;">Loading banner ad...</div>
-        </div>
-        <div style="margin-top: 20px; font-size: 14px; opacity: 0.8;">
-          Ad will close automatically after 30 seconds
-        </div>
-        <div id="timer-display" style="margin-top: 15px; font-size: 18px; color: #e74c3c; font-weight: bold;">
-          Time remaining: <span id="countdown">30</span>s
-        </div>
-      `;
-
-      adContainer.appendChild(wrapper);
-      document.body.appendChild(adContainer);
-      adContainerRef.current = adContainer;
-
-      // Insert the ExoClick banner element
-      const bannerContainer = wrapper.querySelector('#banner-container') as HTMLElement;
+      const bannerContainer = adContainer.querySelector('#banner-container') as HTMLElement;
       if (bannerContainer) {
-        bannerContainer.innerHTML = '';
         bannerContainer.appendChild(adElement);
       }
 
-      // Initialize AdProvider if not exists and trigger the ad
-      if (!window.AdProvider) {
-        window.AdProvider = [];
-      }
-
-      // Trigger the ExoClick banner ad
-      try {
-        console.log('🎯 Triggering ExoClick banner ad with zone ID:', EXOCLICK_ZONE_ID);
+      // Trigger ExoClick ad
+      if (window.AdProvider) {
         window.AdProvider.push({"serve": {}});
-        console.log('✅ ExoClick banner ad triggered successfully');
+        console.log('✅ ExoClick AdProvider.push() called');
         
-        // Check if ad loaded after a short delay
+        // Check if ad loaded
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        if (adElement.innerHTML.trim() !== '') {
+          console.log('✅ ExoClick banner ad content detected');
+          startAdTimer(adContainer, 'ExoClick');
+          return true;
+        } else {
+          console.log('⚠️ ExoClick banner ad is empty');
+          document.body.removeChild(adContainer);
+          return false;
+        }
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('❌ ExoClick ad failed:', error);
+      return false;
+    }
+  };
+
+  const tryAdsterraAd = async (): Promise<boolean> => {
+    try {
+      console.log('📥 Loading Adsterra script...');
+      
+      // Create ad container
+      const adContainer = createAdContainer('Adsterra Advertisement', '#ff6b35');
+      
+      // Load Adsterra script
+      const script = document.createElement('script');
+      script.src = ADSTERRA_SCRIPT_URL;
+      script.async = true;
+      
+      const scriptLoaded = await new Promise((resolve) => {
+        script.onload = () => {
+          console.log('✅ Adsterra script loaded');
+          resolve(true);
+        };
+        script.onerror = () => {
+          console.log('❌ Adsterra script failed to load');
+          resolve(false);
+        };
+        document.head.appendChild(script);
+        
+        // Timeout after 3 seconds
+        setTimeout(() => resolve(false), 3000);
+      });
+
+      if (scriptLoaded) {
+        console.log('✅ Adsterra ad system activated');
+        startAdTimer(adContainer, 'Adsterra');
+        return true;
+      } else {
+        document.body.removeChild(adContainer);
+        return false;
+      }
+      
+    } catch (error) {
+      console.error('❌ Adsterra ad failed:', error);
+      return false;
+    }
+  };
+
+  const createAdContainer = (title: string, color: string): HTMLElement => {
+    const adContainer = document.createElement('div');
+    adContainer.id = 'multi-network-ad-overlay';
+    adContainer.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    `;
+
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = `
+      color: white;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      max-width: 800px;
+    `;
+
+    wrapper.innerHTML = `
+      <div style="font-size: 24px; margin-bottom: 20px; color: ${color};">
+        🎬 ${title}
+      </div>
+      <div style="font-size: 18px; margin-bottom: 30px;">
+        Please interact with the ad if interested
+      </div>
+      <div id="banner-container" style="margin: 20px 0; padding: 20px; background: #2a2a2a; border-radius: 8px; min-height: 120px; display: flex; align-items: center; justify-content: center;">
+        <div style="color: ${color}; margin-bottom: 15px;">Loading advertisement...</div>
+      </div>
+      <div style="margin-top: 20px; font-size: 14px; opacity: 0.8;">
+        Ad will close automatically after 30 seconds
+      </div>
+      <div id="timer-display" style="margin-top: 15px; font-size: 18px; color: ${color}; font-weight: bold;">
+        Time remaining: <span id="countdown">30</span>s
+      </div>
+    `;
+
+    adContainer.appendChild(wrapper);
+    document.body.appendChild(adContainer);
+    adContainerRef.current = adContainer;
+    
+    return adContainer;
+  };
+
+  const showFallbackTimer = () => {
+    console.log('🔄 Starting fallback 30-second timer');
+    const adContainer = createAdContainer('Advertisement Simulation', '#6c757d');
+    
+    const bannerContainer = adContainer.querySelector('#banner-container') as HTMLElement;
+    if (bannerContainer) {
+      bannerContainer.innerHTML = `
+        <div style="color: #6c757d; padding: 40px; text-align: center;">
+          <div style="font-size: 18px; margin-bottom: 10px;">🎬 Ad Simulation</div>
+          <div style="font-size: 14px; opacity: 0.8;">Real ads will load once ExoClick zones are populated</div>
+        </div>
+      `;
+    }
+    
+    startAdTimer(adContainer, 'Simulation');
+  };
+
+  const startAdTimer = (adContainer: HTMLElement, adNetwork: string) => {
+    let timeLeft = 30;
+    const countdownElement = adContainer.querySelector('#countdown');
+    const timerDisplay = adContainer.querySelector('#timer-display') as HTMLElement;
+    
+    const timer = setInterval(() => {
+      timeLeft--;
+      if (countdownElement) {
+        countdownElement.textContent = timeLeft.toString();
+      }
+      
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        if (timerDisplay) {
+          timerDisplay.innerHTML = `✅ ${adNetwork} ad completed! Closing...`;
+          timerDisplay.style.color = '#2ecc71';
+        }
+        
         setTimeout(() => {
-          if (adElement.innerHTML.trim() !== '') {
-            console.log('✅ Banner ad content detected!');
-            const statusDiv = bannerContainer.querySelector('div');
-            if (statusDiv) {
-              statusDiv.innerHTML = '✅ Banner ad loaded successfully!';
-              statusDiv.style.color = '#2ecc71';
+          if (adContainerRef.current) {
+            try {
+              document.body.removeChild(adContainerRef.current);
+              adContainerRef.current = null;
+              console.log(`✅ ${adNetwork} ad closed after 30 seconds`);
+            } catch (e) {
+              console.warn('Ad container already removed');
             }
-          } else {
-            console.log('⚠️ Banner ad still loading or empty');
           }
         }, 2000);
-        
-      } catch (adError) {
-        console.warn('⚠️ Error triggering ExoClick banner ad:', adError);
-        // Continue with timer anyway
       }
-
-      // Start the 30-second countdown timer
-      let timeLeft = 30;
-      const countdownElement = wrapper.querySelector('#countdown');
-      const timerDisplay = wrapper.querySelector('#timer-display') as HTMLElement;
-      
-      const timer = setInterval(() => {
-        timeLeft--;
-        if (countdownElement) {
-          countdownElement.textContent = timeLeft.toString();
-        }
-        
-        if (timeLeft <= 0) {
-          clearInterval(timer);
-          if (timerDisplay) {
-            timerDisplay.innerHTML = '✅ Ad viewing completed! Closing...';
-            timerDisplay.style.color = '#2ecc71';
-          }
-          
-          // Auto-close after completion
-          setTimeout(() => {
-            if (adContainerRef.current) {
-              try {
-                document.body.removeChild(adContainerRef.current);
-                adContainerRef.current = null;
-                console.log('✅ ExoClick banner ad closed after 30 seconds');
-              } catch (e) {
-                console.warn('Ad container already removed');
-              }
-            }
-          }, 2000);
-        }
-      }, 1000);
-
-      console.log('🎬 ExoClick banner ad container created and timer started');
-      return true;
-
-    } catch (error) {
-      console.error('❌ Error showing ExoClick banner ad:', error);
-      
-      // Clean up on error
-      if (adContainerRef.current) {
-        try {
-          document.body.removeChild(adContainerRef.current);
-        } catch (e) {
-          console.warn('Error cleaning up ad container');
-        }
-        adContainerRef.current = null;
-      }
-      
-      // Return true to continue with reward flow (fallback behavior)
-      console.log('🔄 Continuing with fallback ad simulation');
-      return true;
-    }
-  }, [loadScript]);
+    }, 1000);
+  };
 
   const closeAd = useCallback(() => {
     if (adContainerRef.current) {
