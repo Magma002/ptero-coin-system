@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ExoClick Zone Test</title>
+    <title>ExoClick Complete Ad Test</title>
     <style>
         body { 
             font-family: Arial, sans-serif; 
@@ -21,87 +21,406 @@
         .success { background: #2ecc71; color: white; }
         .error { background: #e74c3c; color: white; }
         .warning { background: #f39c12; color: white; }
+        .info { background: #3498db; color: white; }
         .ad-container {
             background: #333;
             padding: 20px;
             margin: 20px auto;
             border-radius: 8px;
-            max-width: 800px;
-            min-height: 200px;
+            max-width: 900px;
+            min-height: 300px;
             border: 2px solid #e74c3c;
+        }
+        button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover { background: #c0392b; }
+        button:disabled { background: #666; cursor: not-allowed; }
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+        .zone-info {
+            background: #1e3a8a;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
-    <h1>🎬 ExoClick Zone 5877266 Test</h1>
-    <div id="status">Testing...</div>
+    <h1>🔧 ExoClick Complete Ad Diagnostic Tool</h1>
+    <div id="status">Ready to test all ExoClick ad formats</div>
     
-    <div class="ad-container">
-        <ins class="eas6a97888e37" data-zoneid="5877266"></ins>
+    <div class="test-section">
+        <h2>🎯 Zone Information</h2>
+        <div class="zone-info">
+            <strong>Old Banner Zone:</strong> 5877266 - Class: eas6a97888e37 (Empty)<br>
+            <strong>VAST Video Zone:</strong> 5877274 - VAST URL (Empty)<br>
+            <strong>NEW Banner Zone:</strong> 5877264 - Class: eas6a97888e2 (Should work!)
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 Test Controls</h2>
+        <button onclick="testAllZones()">🔍 Test All Zones</button>
+        <button onclick="testNewBannerZone()">🆕 Test NEW Banner Zone 5877264</button>
+        <button onclick="testVASTZone()">🎬 Test VAST Zone 5877274</button>
+        <button onclick="testConnectivity()">🌐 Test Connectivity</button>
+        <button onclick="clearAll()">🧹 Clear All</button>
     </div>
     
-    <div id="details"></div>
+    <div class="ad-container" id="ad-container">
+        <h3>Ad Display Area</h3>
+        <p>Click a test button above to see ads here</p>
+    </div>
+    
+    <div class="log" id="log"></div>
 
-    <script async type="application/javascript" src="https://a.magsrv.com/ad-provider.js"></script>
     <script>
-        let statusDiv = document.getElementById('status');
-        let detailsDiv = document.getElementById('details');
+        let testResults = {};
+        
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            const logMessage = `[${timestamp}] ${prefix} ${message}`;
+            logElement.innerHTML += logMessage + '\n';
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(logMessage);
+        }
         
         function updateStatus(message, type = 'warning') {
+            const statusDiv = document.getElementById('status');
             statusDiv.innerHTML = message;
             statusDiv.className = 'status ' + type;
-            console.log(message);
+            log(message, type);
         }
         
-        function addDetail(message) {
-            detailsDiv.innerHTML += '<div style="margin: 5px 0; font-size: 14px;">' + message + '</div>';
-            console.log(message);
+        function clearAll() {
+            document.getElementById('log').innerHTML = '';
+            document.getElementById('ad-container').innerHTML = '<h3>Ad Display Area</h3><p>Click a test button above to see ads here</p>';
+            updateStatus('Ready to test all ExoClick ad formats', 'info');
+            testResults = {};
         }
-        
-        // Test script loading
-        setTimeout(() => {
-            if (typeof AdProvider !== 'undefined') {
-                updateStatus('✅ ExoClick script loaded successfully', 'success');
-                addDetail('AdProvider is available');
-                
-                // Trigger the ad
+
+        async function testConnectivity() {
+            log('🌐 Testing ExoClick server connectivity...', 'info');
+            
+            const tests = [
+                { name: 'AdProvider Script', url: 'https://a.magsrv.com/ad-provider.js' },
+                { name: 'VAST Endpoint', url: 'https://s.magsrv.com/v1/vast.php?idzone=5877274' },
+                { name: 'MagSrv Domain', url: 'https://s.magsrv.com/' }
+            ];
+            
+            for (const test of tests) {
                 try {
-                    (AdProvider = window.AdProvider || []).push({"serve": {}});
-                    addDetail('✅ AdProvider.push() executed');
+                    const response = await fetch(test.url, { method: 'HEAD' });
+                    log(`✅ ${test.name}: ${response.status} ${response.statusText}`, 'success');
+                    testResults[test.name] = { status: response.status, success: true };
+                } catch (error) {
+                    log(`❌ ${test.name}: ${error.message}`, 'error');
+                    testResults[test.name] = { error: error.message, success: false };
+                }
+            }
+        }
+
+        async function loadExoClickScript() {
+            return new Promise((resolve, reject) => {
+                // Remove existing script
+                const existingScript = document.querySelector('script[src*="ad-provider.js"]');
+                if (existingScript) {
+                    existingScript.remove();
+                    log('🔄 Removed existing ExoClick script', 'info');
+                }
+                
+                // Initialize AdProvider
+                if (!window.AdProvider) {
+                    window.AdProvider = [];
+                    log('🔧 Initialized AdProvider array', 'info');
+                }
+                
+                const script = document.createElement('script');
+                script.src = 'https://a.magsrv.com/ad-provider.js';
+                script.async = true;
+                script.type = 'application/javascript';
+                script.setAttribute('data-cfasync', 'false');
+                
+                script.onload = () => {
+                    log('✅ ExoClick AdProvider script loaded successfully', 'success');
+                    log(`🔍 AdProvider available: ${!!window.AdProvider}`, 'info');
+                    log(`🔍 AdProvider length: ${window.AdProvider?.length || 0}`, 'info');
+                    resolve();
+                };
+                
+                script.onerror = (error) => {
+                    log('❌ Failed to load ExoClick script: ' + error, 'error');
+                    reject(error);
+                };
+                
+                document.head.appendChild(script);
+                log('📤 ExoClick script loading...', 'info');
+            });
+        }
+
+        async function testNewBannerZone() {
+            log('🆕 Testing NEW Banner Zone 5877264...', 'info');
+            updateStatus('Testing new banner zone...', 'warning');
+            
+            try {
+                await loadExoClickScript();
+                
+                const adContainer = document.getElementById('ad-container');
+                adContainer.innerHTML = `
+                    <h3>NEW Banner Zone 5877264 Test</h3>
+                    <div style="background: #222; padding: 20px; border-radius: 5px; margin: 20px 0;">
+                        <div style="color: #e74c3c; margin-bottom: 15px;">Loading NEW banner ad...</div>
+                        <div id="new-banner-ad-slot" style="min-height: 100px; border: 1px dashed #666; display: flex; align-items: center; justify-content: center;">
+                            <ins class="eas6a97888e2" data-zoneid="5877264" style="display: block; width: 728px; height: 90px;"></ins>
+                        </div>
+                    </div>
+                    <div id="new-banner-status" style="margin-top: 15px; font-size: 14px; color: #999;">
+                        Triggering NEW banner ad...
+                    </div>
+                `;
+                
+                // Trigger the NEW banner ad
+                if (window.AdProvider) {
+                    window.AdProvider.push({"serve": {}});
+                    log('✅ NEW Banner ad AdProvider.push() called', 'success');
                     
                     // Check if ad loaded after delay
                     setTimeout(() => {
-                        const adElement = document.querySelector('.eas6a97888e37');
+                        const adElement = document.querySelector('.eas6a97888e2');
+                        const statusDiv = document.getElementById('new-banner-status');
+                        
                         if (adElement && adElement.innerHTML.trim() !== '') {
-                            updateStatus('✅ Ad loaded successfully!', 'success');
-                            addDetail('Ad content detected in element');
+                            log('🎉 NEW Banner ad content detected!', 'success');
+                            log(`📄 Ad content preview: ${adElement.innerHTML.substring(0, 100)}...`, 'info');
+                            statusDiv.innerHTML = '🎉 NEW Banner ad loaded successfully!';
+                            statusDiv.style.color = '#2ecc71';
+                            updateStatus('🎉 NEW Banner zone 5877264 is working!', 'success');
+                            testResults.newBannerZone = { success: true, hasContent: true };
                         } else {
-                            updateStatus('⚠️ Ad element empty - Zone might be inactive', 'warning');
-                            addDetail('Zone 5877266 might not be configured or active');
-                            addDetail('Check your ExoClick dashboard');
+                            log('⚠️ NEW Banner ad element is empty', 'warning');
+                            statusDiv.innerHTML = '⚠️ NEW Banner ad element is empty - might need more time';
+                            statusDiv.style.color = '#f39c12';
+                            updateStatus('⚠️ NEW Banner zone 5877264 is empty/inactive', 'warning');
+                            testResults.newBannerZone = { success: true, hasContent: false };
                         }
                     }, 3000);
                     
-                } catch (error) {
-                    updateStatus('❌ Error triggering ad: ' + error.message, 'error');
-                    addDetail('AdProvider.push() failed');
+                } else {
+                    throw new Error('AdProvider not available after script load');
                 }
                 
-            } else {
-                updateStatus('❌ ExoClick script failed to load', 'error');
-                addDetail('AdProvider is not available');
-                addDetail('Possible causes: Network issues, ad blockers, CORS');
+            } catch (error) {
+                log('❌ NEW Banner zone test failed: ' + error.message, 'error');
+                updateStatus('❌ NEW Banner zone test failed', 'error');
+                testResults.newBannerZone = { success: false, error: error.message };
             }
-        }, 2000);
-        
-        // Test network connectivity
-        fetch('https://a.magsrv.com/ad-provider.js', { method: 'HEAD' })
-            .then(response => {
-                addDetail('✅ ExoClick server reachable (Status: ' + response.status + ')');
-            })
-            .catch(error => {
-                addDetail('❌ Cannot reach ExoClick server: ' + error.message);
-            });
+        }
+
+        async function testVASTZone() {
+            log('🎬 Testing VAST Zone 5877274...', 'info');
+            updateStatus('Testing VAST video zone...', 'warning');
+            
+            try {
+                const vastUrl = 'https://s.magsrv.com/v1/vast.php?idzone=5877274';
+                log('📥 Fetching VAST XML from: ' + vastUrl, 'info');
+                
+                const response = await fetch(vastUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const vastXML = await response.text();
+                log('✅ VAST XML received (' + vastXML.length + ' characters)', 'success');
+                log('📄 VAST XML content:\n' + vastXML, 'info');
+                
+                // Parse VAST XML
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(vastXML, 'text/xml');
+                
+                const ads = xmlDoc.getElementsByTagName('Ad');
+                const mediaFiles = xmlDoc.getElementsByTagName('MediaFile');
+                const creatives = xmlDoc.getElementsByTagName('Creative');
+                
+                log(`🔍 VAST Analysis:`, 'info');
+                log(`  - Ad elements: ${ads.length}`, 'info');
+                log(`  - Creative elements: ${creatives.length}`, 'info');
+                log(`  - MediaFile elements: ${mediaFiles.length}`, 'info');
+                
+                const adContainer = document.getElementById('ad-container');
+                
+                if (mediaFiles.length > 0) {
+                    // Found video files
+                    log('🎥 Video files found in VAST:', 'success');
+                    let videoUrl = '';
+                    
+                    for (let i = 0; i < mediaFiles.length; i++) {
+                        const mediaFile = mediaFiles[i];
+                        const type = mediaFile.getAttribute('type') || 'unknown';
+                        const url = mediaFile.textContent?.trim() || '';
+                        log(`  📹 MediaFile ${i + 1}: ${type} - ${url}`, 'info');
+                        
+                        if (type.includes('mp4') && !videoUrl) {
+                            videoUrl = url;
+                        }
+                    }
+                    
+                    if (!videoUrl && mediaFiles[0]) {
+                        videoUrl = mediaFiles[0].textContent?.trim() || '';
+                    }
+                    
+                    if (videoUrl) {
+                        log('🎯 Selected video URL: ' + videoUrl, 'success');
+                        
+                        adContainer.innerHTML = `
+                            <h3>VAST Zone 5877274 Test - Video Found!</h3>
+                            <div style="background: #222; padding: 20px; border-radius: 5px; margin: 20px 0;">
+                                <video id="vast-video" controls autoplay style="width: 100%; max-width: 600px; height: auto; border-radius: 5px;">
+                                    <source src="${videoUrl}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                            <div style="color: #2ecc71; font-size: 14px;">
+                                ✅ VAST video ad loaded successfully from zone 5877274
+                            </div>
+                        `;
+                        
+                        const video = document.getElementById('vast-video');
+                        video.onplay = () => {
+                            log('▶️ VAST video started playing', 'success');
+                            updateStatus('✅ VAST zone 5877274 is working with video!', 'success');
+                        };
+                        video.onerror = (e) => {
+                            log('❌ Video playback error', 'error');
+                        };
+                        
+                        testResults.vastZone = { success: true, hasVideo: true, videoUrl };
+                    } else {
+                        throw new Error('No valid video URL found in MediaFile elements');
+                    }
+                    
+                } else {
+                    // No video files - empty VAST
+                    log('⚠️ VAST XML is empty (no MediaFile elements)', 'warning');
+                    
+                    adContainer.innerHTML = `
+                        <h3>VAST Zone 5877274 Test - Empty Response</h3>
+                        <div style="background: #2a2a2a; padding: 20px; border-radius: 5px; margin: 20px 0;">
+                            <div style="color: #f39c12; margin-bottom: 15px;">⚠️ VAST XML is empty</div>
+                            <div style="background: #000; color: #0f0; padding: 10px; border-radius: 3px; font-family: monospace; font-size: 11px; text-align: left;">
+                                ${vastXML.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+                            </div>
+                            <div style="color: #999; margin-top: 15px; font-size: 14px;">
+                                This means zone 5877274 exists but has no video ad campaigns assigned yet.
+                            </div>
+                        </div>
+                    `;
+                    
+                    updateStatus('⚠️ VAST zone 5877274 is active but empty', 'warning');
+                    testResults.vastZone = { success: true, hasVideo: false, isEmpty: true };
+                }
+                
+            } catch (error) {
+                log('❌ VAST zone test failed: ' + error.message, 'error');
+                
+                const adContainer = document.getElementById('ad-container');
+                adContainer.innerHTML = `
+                    <h3>VAST Zone 5877274 Test - Error</h3>
+                    <div style="background: #2a2a2a; padding: 20px; border-radius: 5px; margin: 20px 0;">
+                        <div style="color: #e74c3c;">❌ Error: ${error.message}</div>
+                    </div>
+                `;
+                
+                updateStatus('❌ VAST zone test failed', 'error');
+                testResults.vastZone = { success: false, error: error.message };
+            }
+        }
+
+        async function testAllZones() {
+            log('🔍 Starting comprehensive ExoClick zone testing...', 'info');
+            updateStatus('Running all tests...', 'warning');
+            
+            // Test connectivity first
+            await testConnectivity();
+            
+            // Wait a bit between tests
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Test VAST zone
+            await testVASTZone();
+            
+            // Wait a bit more
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Test banner zone
+            await testBannerZone();
+            
+            // Summary
+            setTimeout(() => {
+                log('\n📊 TEST SUMMARY:', 'info');
+                log('================', 'info');
+                
+                Object.keys(testResults).forEach(test => {
+                    const result = testResults[test];
+                    if (result.success) {
+                        log(`✅ ${test}: Working`, 'success');
+                    } else {
+                        log(`❌ ${test}: Failed - ${result.error}`, 'error');
+                    }
+                });
+                
+                log('\n🎯 RECOMMENDATIONS:', 'info');
+                log('==================', 'info');
+                
+                if (testResults.vastZone?.isEmpty) {
+                    log('• VAST zone 5877274 is active but needs 24-48 hours to get video ads', 'warning');
+                }
+                
+                if (testResults.bannerZone?.hasContent) {
+                    log('• Banner zone 5877266 is working - use as backup!', 'success');
+                } else if (testResults.bannerZone?.success) {
+                    log('• Banner zone 5877266 is active but empty - may need time to populate', 'warning');
+                }
+                
+                updateStatus('✅ All tests completed - check log for details', 'success');
+            }, 3000);
+        }
+
+        // Auto-load info on page load
+        window.addEventListener('load', () => {
+            log('🌐 ExoClick Ad Diagnostic Tool loaded', 'info');
+            log('🎯 Ready to test zones 5877266 (banner) and 5877274 (VAST)', 'info');
+            log('Click "Test All Zones" for comprehensive testing', 'info');
+        });
     </script>
 </body>
 </html>

@@ -80,15 +80,16 @@
     <div class="test-section">
         <h2>🎯 Zone Information</h2>
         <div class="zone-info">
-            <strong>Old Zone (Banner):</strong> 5877266 - Class: eas6a97888e37<br>
-            <strong>New Zone (VAST Video):</strong> 5877274 - VAST URL: https://s.magsrv.com/v1/vast.php?idzone=5877274
+            <strong>Old Banner Zone:</strong> 5877266 - Class: eas6a97888e37 (Empty)<br>
+            <strong>VAST Video Zone:</strong> 5877274 - VAST URL (Empty)<br>
+            <strong>NEW Banner Zone:</strong> 5877264 - Class: eas6a97888e2 (Should work!)
         </div>
     </div>
 
     <div class="test-section">
         <h2>🧪 Test Controls</h2>
         <button onclick="testAllZones()">🔍 Test All Zones</button>
-        <button onclick="testBannerZone()">📰 Test Banner Zone 5877266</button>
+        <button onclick="testNewBannerZone()">🆕 Test NEW Banner Zone 5877264</button>
         <button onclick="testVASTZone()">🎬 Test VAST Zone 5877274</button>
         <button onclick="testConnectivity()">🌐 Test Connectivity</button>
         <button onclick="clearAll()">🧹 Clear All</button>
@@ -187,50 +188,50 @@
             });
         }
 
-        async function testBannerZone() {
-            log('📰 Testing Banner Zone 5877266...', 'info');
-            updateStatus('Testing banner zone...', 'warning');
+        async function testNewBannerZone() {
+            log('🆕 Testing NEW Banner Zone 5877264...', 'info');
+            updateStatus('Testing new banner zone...', 'warning');
             
             try {
                 await loadExoClickScript();
                 
                 const adContainer = document.getElementById('ad-container');
                 adContainer.innerHTML = `
-                    <h3>Banner Zone 5877266 Test</h3>
+                    <h3>NEW Banner Zone 5877264 Test</h3>
                     <div style="background: #222; padding: 20px; border-radius: 5px; margin: 20px 0;">
-                        <div style="color: #e74c3c; margin-bottom: 15px;">Loading banner ad...</div>
-                        <div id="banner-ad-slot" style="min-height: 100px; border: 1px dashed #666; display: flex; align-items: center; justify-content: center;">
-                            <ins class="eas6a97888e37" data-zoneid="5877266" style="display: block; width: 728px; height: 90px;"></ins>
+                        <div style="color: #e74c3c; margin-bottom: 15px;">Loading NEW banner ad...</div>
+                        <div id="new-banner-ad-slot" style="min-height: 100px; border: 1px dashed #666; display: flex; align-items: center; justify-content: center;">
+                            <ins class="eas6a97888e2" data-zoneid="5877264" style="display: block; width: 728px; height: 90px;"></ins>
                         </div>
                     </div>
-                    <div id="banner-status" style="margin-top: 15px; font-size: 14px; color: #999;">
-                        Triggering banner ad...
+                    <div id="new-banner-status" style="margin-top: 15px; font-size: 14px; color: #999;">
+                        Triggering NEW banner ad...
                     </div>
                 `;
                 
-                // Trigger the banner ad
+                // Trigger the NEW banner ad
                 if (window.AdProvider) {
                     window.AdProvider.push({"serve": {}});
-                    log('✅ Banner ad AdProvider.push() called', 'success');
+                    log('✅ NEW Banner ad AdProvider.push() called', 'success');
                     
                     // Check if ad loaded after delay
                     setTimeout(() => {
-                        const adElement = document.querySelector('.eas6a97888e37');
-                        const statusDiv = document.getElementById('banner-status');
+                        const adElement = document.querySelector('.eas6a97888e2');
+                        const statusDiv = document.getElementById('new-banner-status');
                         
                         if (adElement && adElement.innerHTML.trim() !== '') {
-                            log('✅ Banner ad content detected!', 'success');
+                            log('🎉 NEW Banner ad content detected!', 'success');
                             log(`📄 Ad content preview: ${adElement.innerHTML.substring(0, 100)}...`, 'info');
-                            statusDiv.innerHTML = '✅ Banner ad loaded successfully!';
+                            statusDiv.innerHTML = '🎉 NEW Banner ad loaded successfully!';
                             statusDiv.style.color = '#2ecc71';
-                            updateStatus('✅ Banner zone 5877266 is working!', 'success');
-                            testResults.bannerZone = { success: true, hasContent: true };
+                            updateStatus('🎉 NEW Banner zone 5877264 is working!', 'success');
+                            testResults.newBannerZone = { success: true, hasContent: true };
                         } else {
-                            log('⚠️ Banner ad element is empty', 'warning');
-                            statusDiv.innerHTML = '⚠️ Banner ad element is empty - zone might be inactive';
+                            log('⚠️ NEW Banner ad element is empty', 'warning');
+                            statusDiv.innerHTML = '⚠️ NEW Banner ad element is empty - might need more time';
                             statusDiv.style.color = '#f39c12';
-                            updateStatus('⚠️ Banner zone 5877266 is empty/inactive', 'warning');
-                            testResults.bannerZone = { success: true, hasContent: false };
+                            updateStatus('⚠️ NEW Banner zone 5877264 is empty/inactive', 'warning');
+                            testResults.newBannerZone = { success: true, hasContent: false };
                         }
                     }, 3000);
                     
@@ -239,9 +240,9 @@
                 }
                 
             } catch (error) {
-                log('❌ Banner zone test failed: ' + error.message, 'error');
-                updateStatus('❌ Banner zone test failed', 'error');
-                testResults.bannerZone = { success: false, error: error.message };
+                log('❌ NEW Banner zone test failed: ' + error.message, 'error');
+                updateStatus('❌ NEW Banner zone test failed', 'error');
+                testResults.newBannerZone = { success: false, error: error.message };
             }
         }
 
